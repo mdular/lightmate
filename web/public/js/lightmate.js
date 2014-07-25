@@ -12,6 +12,7 @@ app.registerModule('lightmate', function () {
         color,
         picker,
         eraser,
+        filler,
         drawmode = 'color';
 
     var init = function () {
@@ -28,6 +29,7 @@ app.registerModule('lightmate', function () {
       color = document.querySelector('input[type=color]');
       picker = document.querySelector('#picker');
       eraser = document.querySelector('#eraser');
+      filler = document.querySelector('#filler');
 
       createPixels();
     };
@@ -47,6 +49,17 @@ app.registerModule('lightmate', function () {
       },
       eraser  : function (target) {
         target.removeAttribute('style');
+      },
+      filler  : function (target) {
+        var targetColor = target.style.background;
+        if (typeof targetColor !== 'undefined' && targetColor.length > 0) {
+          targetColor = rgbToCssHex(targetColor);
+        }
+        
+        for (var pixelNode in pixels.childNodes) {
+          
+        }
+        console.log(pixels.childNodes);
       }
     };
 
@@ -85,6 +98,10 @@ app.registerModule('lightmate', function () {
       eraser.addEventListener('mousedown', function (event) {
         toggleDrawMode('eraser');
       });
+
+      filler.addEventListener('mousedown', function (event) {
+        toggleDrawMode('filler');
+      });
     };
 
     var toggleDrawMode = function (mode) {
@@ -100,14 +117,17 @@ app.registerModule('lightmate', function () {
       eraser.className = '';
       picker.className = '';
 
-      if (mode === 1 || mode === 'color') { // draw color
+      if (mode === 'color') { // draw color
         drawmode = 'color';
-      } else if (mode === 0 || mode === 'picker') {
+      } else if (mode === 'picker') {
         drawmode = 'picker';
         picker.className = 'active';
-      } else if (mode === -1 || mode === 'eraser') {
+      } else if (mode === 'eraser') {
         drawmode = 'eraser';
         eraser.className = 'active';
+      } else if (mode === 'filler') {
+        drawmode = 'filler';
+        filler.className = 'active';
       } else {
         throw new Error('invalid draw mode');
       }

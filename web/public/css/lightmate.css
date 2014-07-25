@@ -2,6 +2,19 @@
   box-sizing: border-box;
 }
 
+body {
+  font: 13px/1.5em Helvetica;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  transition: color, .5s;
+}
+  a:hover {
+    color: #555;
+  }
+
 
 #color, #pixels, #options {
   width: 176px;
@@ -12,6 +25,7 @@
 /* color */
 #color { 
   overflow: hidden;
+  line-height: 1em;
 }
 
 #color form {
