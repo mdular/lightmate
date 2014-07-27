@@ -1,5 +1,5 @@
 /**
- * lightmade module
+ * lightmate module
  * @author Markus J Doetsch mdular.com
  */
 /* global app:true */
@@ -16,11 +16,9 @@ app.registerModule('lightmate', function () {
         drawmode = 'color';
 
     var init = function () {
-        console.log('lightmate init');
+      setup();
 
-        setup();
-
-        enableDrawing();
+      enableDrawing();
     };
 
     var setup = function () {
@@ -36,7 +34,8 @@ app.registerModule('lightmate', function () {
 
     var drawModes = {
       color   : function (target) {
-        target.setAttribute('style', 'background-color:' + color.value);
+        //target.setAttribute('style', 'background-color:' + color.value);
+        setPixelColor(target, color.value);
       },
       picker  : function (target) {
         var rgb = target.style.background;
@@ -48,7 +47,8 @@ app.registerModule('lightmate', function () {
         setDrawMode('color');
       },
       eraser  : function (target) {
-        target.removeAttribute('style');
+        setPixelColor(target, false);
+        //target.removeAttribute('style');
       },
       filler  : function (target) {
         var targetColor = target.style.background;
@@ -56,10 +56,16 @@ app.registerModule('lightmate', function () {
           targetColor = rgbToCssHex(targetColor);
         }
         
-        for (var pixelNode in pixels.childNodes) {
+        for (var i = 0; i < pixels.childNodes.length; i++) {
           
+          //console.log(pixels.childNodes[i].style.background.length);
+
+          if (pixels.childNodes[i].style.background.length === 0) {
+            setPixelColor(pixels.childNodes[i], color.value);
+          }
         }
-        console.log(pixels.childNodes);
+
+        setDrawMode('color');
       }
     };
 
@@ -72,23 +78,6 @@ app.registerModule('lightmate', function () {
         }
 
         drawModes[drawmode].call(drawModes[drawmode], event.target);
-        return;
-
-        if (drawmode === 'color') {
-          event.target.setAttribute('style', 'background-color:' + color.value);
-          // TODO: update data array
-          console.log(color.value);
-        } else if (drawmode === 'picker') {
-          //color.value = event.target.style.background;
-          var rgb = event.target.style.background;
-
-          if (typeof rgb !== 'undefined' && rgb.length > 0) {
-            color.value = rgbToCssHex(rgb);
-          }
-
-          drawmode = 'color';
-          picker.className = '';
-        }
       });
 
       picker.addEventListener('mousedown', function (event) {
@@ -101,6 +90,12 @@ app.registerModule('lightmate', function () {
 
       filler.addEventListener('mousedown', function (event) {
         toggleDrawMode('filler');
+      });
+
+      document.querySelector('#clear-option').addEventListener('mousedown', function (event) {
+        for (var i = 0; i < pixels.childNodes.length; i++) {
+            setPixelColor(pixels.childNodes[i], false);
+        }
       });
     };
 
@@ -116,6 +111,7 @@ app.registerModule('lightmate', function () {
 
       eraser.className = '';
       picker.className = '';
+      filler.className = '';
 
       if (mode === 'color') { // draw color
         drawmode = 'color';
@@ -163,7 +159,7 @@ app.registerModule('lightmate', function () {
       rgbString = rgbString.split(',');
 
       // convert values
-      hex = rgbString.map(function (val) {        // for each item in array
+      hex = rgbString.map(function (val) {  // for each item in array
         val = parseInt(val).toString(16);   // convert to hex
 
         if (val.length === 1) {
@@ -175,6 +171,15 @@ app.registerModule('lightmate', function () {
 
       // return as combined css hex string
       return "#" + hex.join('');
+    };
+
+    var setPixelColor = function (target, value) {
+      if (value) {
+        target.setAttribute('style', 'background-color:' + value);
+      } else {
+        target.removeAttribute('style');
+      }
+      
     };
 
     return {
