@@ -1,12 +1,14 @@
 /**
  * lightweight application manager
- * @author Markus J Doetsch markus.doetsch@rocket-internet.de
+ * @author Markus J Doetsch mdular.com
  *
  * register page controllers like this:
  * app.registerController('myController, myModule[FunctionWrapper]);
+ * <body id="myController">
  *
  * register modules like this:
  * app.registerModule('myModule', myModule[FunctionWrapper] [, boolean alwaysRun = false]);
+ * <body data-modules="myModule myOtherModule"> (not required when alwaysRun = true)
  *
  * declare dependencies in body-tag.
  * id = controller (use server-side mvc controller or controller-action, depending on required granularity)
@@ -14,7 +16,7 @@
  *
  * modules are invoked before the controller
  *
- * TODO: implement a window.load trigger for controllers and initialize on dom ready.. needs IE8-safe implementation
+ * TODO: implement a window.load trigger for controllers and initialize on dom ready.. needs IE8-safe implementation -> this is currently solved using aight.js
  * TODO: inject module references into the controller
  */
 /* global app:true */
