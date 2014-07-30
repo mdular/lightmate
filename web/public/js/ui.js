@@ -1,10 +1,10 @@
 /**
- * lightmate module
+ * ui module
  * @author Markus J Doetsch mdular.com
  */
 /* global app:true */
 
-app.registerModule('lightmate', function () {
+app.registerModule('ui', function () {
     "use strict";
 
     var templates,
@@ -17,8 +17,7 @@ app.registerModule('lightmate', function () {
 
     var init = function () {
       setup();
-
-      enableDrawing();
+      //enableDrawing();
     };
 
     var setup = function () {
@@ -77,7 +76,14 @@ app.registerModule('lightmate', function () {
           return;
         }
 
+        var isPicker = (drawmode === 'picker');
+
         drawModes[drawmode].call(drawModes[drawmode], event.target);
+
+
+        if (!isPicker) {
+          pixels.dispatchEvent(new Event('change'));
+        }
       });
 
       picker.addEventListener('mousedown', function (event) {
@@ -182,7 +188,37 @@ app.registerModule('lightmate', function () {
       
     };
 
+    var getFrame = function () {
+      var data = [];
+
+      for (var i = 0; i < pixels.childNodes.length; i++) {
+        var value = 0;
+
+        if (pixels.childNodes[i].style.background.length > 0) {
+          value = rgbToCssHex(pixels.childNodes[i].style.background);
+        }
+
+        data.push(value);
+      }
+
+      return data;
+    };
+
+    var setFrame = function (data, triggerChange) {
+      for (var i = 0; i < data.length; i++) {
+        setPixelColor(pixels.childNodes[i], data[i]);
+      }
+
+      if (typeof triggerChange !== 'undefined' && triggerChange) {
+        pixels.dispatchEvent(new Event('change'));
+      }
+    };
+
     return {
-        init: init
+        init      : init,
+        enableDrawing : enableDrawing,
+        getFrame  : getFrame,
+        setFrame  : setFrame,
+        getTemplate : getTemplate
     };
 });
