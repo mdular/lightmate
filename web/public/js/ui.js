@@ -82,6 +82,8 @@ app.registerModule('ui', function () {
 
 
         if (!isPicker) {
+          // TODO: pass drawmode with event (for history state)
+
           pixels.dispatchEvent(new Event('change'));
         }
       });
