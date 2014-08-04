@@ -20,6 +20,8 @@ app.registerModule('history', function () {
       history = document.querySelector('#histories');
       
       pixels.addEventListener('change', function (event) {
+        console.log(event);
+
         var frame = ui.getFrame();
 
         historyData.unshift(frame);
@@ -47,7 +49,7 @@ app.registerModule('history', function () {
       // create from template
       var item = ui.getTemplate('history');
 
-      item.innerHTML = 'aaaa' + Math.random();
+      item.innerHTML = renderHistory(data);
 
       history.insertBefore(item, history.childNodes[0]);
 
@@ -57,8 +59,20 @@ app.registerModule('history', function () {
     };
 
     var renderHistory = function (data) {
-      var html = '';
+      var html = '',
+          thumb = '<div class="thumb">';
 
+      for (var i = 0; i < data.length; i++) {
+        thumb += '<span style="background: '+ data[i] +';"></span>';
+      }
+      thumb += '</div>';
+
+      // TODO: add change event msg of action
+
+      html = thumb;
+      html += 'drawmode';
+
+      return html;
     };
 
     var getHistoryIndex = function (target) {
