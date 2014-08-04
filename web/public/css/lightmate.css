@@ -59,6 +59,10 @@ a {
     border: none;
   }
 
+#color a {
+  margin-left: .5em;
+}
+
 #color #picker {
   /*
   display: inline-block;
@@ -74,6 +78,7 @@ a {
 /* pixels */
 #pixels {
   height: 176px;
+  margin-top: 1em;
 }
 
 .pixel {
@@ -82,7 +87,7 @@ a {
   width: 10%;
   height: 10%;
   border-radius: 4px;
-  border: 1px solid #eee;
+  border: 1px solid #ccc;
   margin-left: 2.85%;
   margin-bottom: 2.85%;
 }
