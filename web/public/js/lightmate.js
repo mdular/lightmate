@@ -7,11 +7,17 @@
 app.registerController('lightmate', function () {
     "use strict";
 
-    var ui;
+    var ui, data;
 
     var init = function () {
       ui = app.getModule('ui').module;
       ui.enableDrawing();
+
+      data = app.getModule('data').module;
+
+      document.querySelector('#save').addEventListener('mousedown', function (event) {
+        data.save(ui.getFrame());
+      });
     };
 
     // TODO: action concept
