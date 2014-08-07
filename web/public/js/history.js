@@ -20,7 +20,7 @@ app.registerModule('history', function () {
       history = document.querySelector('#histories');
       
       pixels.addEventListener('change', function (event) {
-        console.log(event);
+        //console.log(event);
 
         var frame = ui.getFrame();
 
@@ -70,7 +70,7 @@ app.registerModule('history', function () {
       // TODO: add change event msg of action
 
       html = thumb;
-      html += 'drawmode';
+      //html += 'drawmode';
 
       return html;
     };
