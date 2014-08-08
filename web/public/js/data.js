@@ -18,47 +18,79 @@ app.registerModule('data', function () {
         id = frameId.value;
     };
 
-    var ajax = function (url, data) {
+    var ajax = function (url, data, callback) {
         var req = new XMLHttpRequest();
 
         req.addEventListener('progress', function (event) {
-            console.log('progress', event);
+            //console.log('progress', event);
+
+            callback(event);
         });
 
         req.addEventListener('load', function (event) {
-            console.log('load', event);
+            //console.log('load', event);
+
+            callback(event);
         });
 
         req.addEventListener('error', function (event) {
-            console.log('error', event);
+            //console.log('error', event);
+
+            callback(event);
         });
 
         req.addEventListener('abort', function (event) {
-            console.log('abort', event);
+            //console.log('abort', event);
+
+            callback(event);
         });
 
-        req.open('post', url);
-        req.send(JSON.stringify(data));
+        if (data) {
+            req.open('post', url);
+            req.send(JSON.stringify(data));
+        } else {
+            req.open('get', url);
+            req.send();
+        }
     }
 
     var save = function (data) {
-        if (typeof id !== 'undefined' && id) {
-            var payload = {};
-            payload.reference = id;
-            payload.pixels = data;
-            console.log('ajax', payload);
-            // ajax(url + id + '/save', data);
-        } else {
-            console.log('no id!');
+        if (typeof id === 'undefined' || !id) {
+            throw new Error('no id!');
+            return;
         }
+
+        var payload = {};
+        payload.reference = id;
+        payload.pixels = data;
+
+        ajax(url + id + '/save', payload, function (event) {
+            if (event.type === "load" && event.target.status === 200) {
+                console.log('save OK');
+            } else if (event.target.status !== 200) {
+                console.log('save error', event.target.status);
+            }
+        });
     };
 
-    var load = function (id) {
+    var load = function (callback) {
+        if (typeof id === 'undefined' || !id) {
+            throw new Error('no id!');
+            return;
+        }
 
+        ajax(url + id, false, function (event) {
+            if (event.type === 'load' && event.target.status === 200) {
+                callback(JSON.parse(event.target.response));
+            } else if (event.target.status !== 200) {
+                console.log('load error', event.target.status);
+            }
+        });
     };
 
     return {
         init      : init,
-        save      : save
+        save      : save,
+        load      : load
     };
 });

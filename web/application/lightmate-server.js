@@ -66,14 +66,13 @@ function routeRequest(params, response, postData) {
 var actions = {
 
   save  : function (id, data, response) {
-
     // prepare data
     var update = {};
     if (typeof data.pixels !== 'undefined' && data.pixels.length > 0) {
-      update[$set] = { pixels : data.pixels };
+      update['$set'] = { pixels : data.pixels };
     }
     if (typeof data.history !== 'undefined' && data.history.length > 0) {
-      update[$set] = { history : data.history };
+      update['$set'] = { history : data.history };
     }
 
     db.collection('frames').findAndModify(
@@ -98,9 +97,16 @@ var actions = {
   },
 
   load  : function (id, response) {
-    db.collection('frames').findOne({
+    db.collection('frames').findOne(
+    {
       reference : id
-    }, function (err, doc) {
+    }, 
+    {
+      _id     : 0,
+      pixels  : 1,
+      history : 1
+    },
+    function (err, doc) {
       if (err) {
         console.dir(err);
         return;

@@ -18,6 +18,12 @@ app.registerController('lightmate', function () {
       document.querySelector('#save').addEventListener('mousedown', function (event) {
         data.save(ui.getFrame());
       });
+
+      document.querySelector('#load').addEventListener('mousedown', function (event) {
+        data.load(function (data) {
+          ui.setFrame(data.pixels);
+        });
+      });
     };
 
     // TODO: action concept
