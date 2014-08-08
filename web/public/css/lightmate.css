@@ -115,6 +115,7 @@ a {
   display: inline-block;
   vertical-align: middle;
   margin-right: 5%;
+  pointer-events: none;
 }
 
 .history .thumb span {
@@ -122,6 +123,7 @@ a {
   width: 10%;
   height: 10%;
   margin-left: 2%;
+  pointer-events: none;
 }
 
 
