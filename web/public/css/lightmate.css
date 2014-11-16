@@ -90,9 +90,13 @@ a {
   border: 1px solid #ccc;
   margin-left: 2.85%;
   margin-bottom: 2.85%;
+  transition: border-color .1s;
 }
   .pixel:nth-child(8n+1) {
     margin-left:0;
+  }
+  .pixel:hover {
+    border-color: #999;
   }
 
 /* history */
