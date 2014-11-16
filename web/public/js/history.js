@@ -18,22 +18,18 @@ app.registerModule('history', function () {
     var init = function () {
       ui = app.getModule('ui').module;
       history = document.querySelector('#histories');
-      
-      pixels.addEventListener('change', function (event) {
-        //console.log(event);
 
-        var frame = ui.getFrame();
-
-        historyData.unshift(frame);
-
-        if (historyData.length > config.items) {
-          historyData.pop();
+      // listen for draw events
+      pixels.addEventListener('draw', function (event) {
+        var historyState = {
+          mode  : event.detail.mode,
+          frame : ui.getFrame()
         }
 
-        addItem(frame);
-        //console.log('change');
+        addItem(historyState);
       });
 
+      // listen for clicks on history states
       history.addEventListener('click', function (event) {
         var re = /history/g;
         if ( !re.test(event.target.getAttribute('class')) ) {
@@ -41,36 +37,44 @@ app.registerModule('history', function () {
         }
 
         var index = getHistoryIndex(event.target);
-        ui.setFrame(historyData[index]);
+        ui.setFrame(historyData[index].frame);
       });
     };
 
-    var addItem = function (data) {
+    var addItem = function (historyState) {
+      // add item to front of array
+      historyData.unshift(historyState);
+
+      // cap states array
+      if (historyData.length > config.items) {
+        historyData.pop();
+      }
+
       // create from template
       var item = ui.getTemplate('history');
 
-      item.innerHTML = renderHistory(data);
+      item.innerHTML = renderHistory(historyState);
 
       history.insertBefore(item, history.childNodes[0]);
 
       if (history.childNodes.length > config.items) {
-        removeItem(history.childNodes[config.items]);
+        removeItem(history.childNodes.length -1);
       }
     };
 
-    var renderHistory = function (data) {
+    var renderHistory = function (historyState) {
       var html = '',
           thumb = '<div class="thumb">';
 
-      for (var i = 0; i < data.length; i++) {
-        thumb += '<span style="background: '+ data[i] +';"></span>';
+      for (var i = 0; i < historyState.frame.length; i++) {
+        thumb += '<span style="background: '+ historyState.frame[i] +';"></span>';
       }
       thumb += '</div>';
 
       // TODO: add change event msg of action
 
       html = thumb;
-      //html += 'drawmode';
+      html += historyState.mode;
 
       return html;
     };
@@ -84,11 +88,32 @@ app.registerModule('history', function () {
       return i;
     };
 
-    var removeItem = function (item) {
-      history.removeChild(item);
-    }
+    var removeItem = function (index) {
+      historyData.splice(index, 1);
+
+      history.removeChild(history.childNodes[index]);
+    };
+
+    var getHistory = function () {
+      return historyData;
+    };
+
+    var setHistory = function (data) {
+
+      // clear history
+      for (var i = 0, len = historyData.length; i < len; i++) {
+        removeItem(0);
+      }
+
+      // add new items
+      for (var i = data.length - 1; i >= 0; i--) {
+        addItem(data[i]);
+      }
+    };
 
     return {
-        init      : init
+        init        : init,
+        getHistory  : getHistory,
+        setHistory  : setHistory
     };
 });

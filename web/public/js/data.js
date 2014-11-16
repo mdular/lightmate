@@ -60,11 +60,9 @@ app.registerModule('data', function () {
             return;
         }
 
-        var payload = {};
-        payload.reference = id;
-        payload.pixels = data;
+        data.reference = id;
 
-        ajax(url + id + '/save', payload, function (event) {
+        ajax(url + id + '/save', data, function (event) {
             if (event.type === "load" && event.target.status === 200) {
                 console.log('save OK');
             } else if (event.target.status !== 200) {

@@ -33,7 +33,6 @@ app.registerModule('ui', function () {
 
     var drawModes = {
       color   : function (target) {
-        //target.setAttribute('style', 'background-color:' + color.value);
         setPixelColor(target, color.value);
       },
       picker  : function (target) {
@@ -80,11 +79,10 @@ app.registerModule('ui', function () {
 
         drawModes[drawmode].call(drawModes[drawmode], event.target);
 
-
         if (!isPicker) {
-          // TODO: pass drawmode with event (for history state)
+          var evt = new CustomEvent('draw', {'detail' : {'mode' : drawmode}});
 
-          pixels.dispatchEvent(new Event('change'));
+          pixels.dispatchEvent(evt);
         }
       });
 

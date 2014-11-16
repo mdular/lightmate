@@ -7,21 +7,30 @@
 app.registerController('lightmate', function () {
     "use strict";
 
-    var ui, data;
+    var ui, data, history;
 
     var init = function () {
       ui = app.getModule('ui').module;
-      ui.enableDrawing();
-
+      history = app.getModule('history').module;
       data = app.getModule('data').module;
 
-      document.querySelector('#save').addEventListener('mousedown', function (event) {
-        data.save(ui.getFrame());
+      ui.enableDrawing();
+
+      document.querySelector('#save').addEventListener('click', function (event) {
+        event.preventDefault();
+
+        data.save({
+          pixels    : ui.getFrame(),
+          history   : history.getHistory()
+        });
       });
 
-      document.querySelector('#load').addEventListener('mousedown', function (event) {
+      document.querySelector('#load').addEventListener('click', function (event) {
+        event.preventDefault();
+
         data.load(function (data) {
           ui.setFrame(data.pixels);
+          history.setHistory(data.history);
         });
       });
     };
