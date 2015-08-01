@@ -17,56 +17,50 @@ app.registerModule('ui', function () {
         drawmode = 'color';
 
     var init = function () {
-      setup();
-      //enableDrawing();
+        setup();
+        //enableDrawing();
     };
 
     var setup = function () {
-      pixels = document.querySelector('#pixels');
-      templates = document.querySelector('#templates');
-      color = document.querySelector('input[type=color]');
-      picker = document.querySelector('#picker');
-      eraser = document.querySelector('#eraser');
-      filler = document.querySelector('#filler');
-      clear = document.querySelector('#clear-option');
+        pixels = document.querySelector('#pixels');
+        templates = document.querySelector('#templates');
+        color = document.querySelector('input[type=color]');
+        picker = document.querySelector('#picker');
+        eraser = document.querySelector('#eraser');
+        filler = document.querySelector('#filler');
+        clear = document.querySelector('#clear-option');
 
-      createPixels();
+        createPixels();
     };
 
     var drawModes = {
-      color   : function (target) {
-        setPixelColor(target, color.value);
-      },
-      picker  : function (target) {
-        var rgb = target.style.background;
+        color   : function (target) {
+            setPixelColor(target, color.value);
+        },
+        picker  : function (target) {
+            var rgb = target.style.background;
 
-        if (typeof rgb !== 'undefined' && rgb.length > 0) {
-          color.value = rgbToCssHex(rgb);
+            if (typeof rgb !== 'undefined' && rgb.length > 0) {
+                color.value = rgbToCssHex(rgb);
+            }
+
+            setDrawMode('color');
+        },
+        eraser  : function (target) {
+            setPixelColor(target, false);
+            //target.removeAttribute('style');
+        },
+        filler  : function (target) {
+            var targetColor = target.style.backgroundColor;
+
+            for (var i = 0; i < pixels.childNodes.length; i++) {
+                if (pixels.childNodes[i].style.backgroundColor === targetColor) {
+                    setPixelColor(pixels.childNodes[i], color.value);
+                }
+            }
+
+            setDrawMode('color');
         }
-
-        setDrawMode('color');
-      },
-      eraser  : function (target) {
-        setPixelColor(target, false);
-        //target.removeAttribute('style');
-      },
-      filler  : function (target) {
-        var targetColor = target.style.background;
-        if (typeof targetColor !== 'undefined' && targetColor.length > 0) {
-          targetColor = rgbToCssHex(targetColor);
-        }
-
-        for (var i = 0; i < pixels.childNodes.length; i++) {
-
-          //console.log(pixels.childNodes[i].style.background.length);
-
-          if (pixels.childNodes[i].style.background.length === 0) {
-            setPixelColor(pixels.childNodes[i], color.value);
-          }
-        }
-
-        setDrawMode('color');
-      }
     };
 
     var enableDrawing = function () {
@@ -79,11 +73,12 @@ app.registerModule('ui', function () {
 
         var isPicker = (drawmode === 'picker');
 
+        var mode = drawmode;
+
         drawModes[drawmode].call(drawModes[drawmode], event.target);
 
         if (!isPicker) {
-          var evt = new CustomEvent('draw', {'detail' : {'mode' : drawmode}});
-
+          var evt = new CustomEvent('draw', {'detail' : {'mode' : mode}});
           pixels.dispatchEvent(evt);
         }
       });
@@ -161,14 +156,14 @@ app.registerModule('ui', function () {
     var rgbToCssHex = function (rgbString) {
       var hex;
 
-      // cut away css
+      // cut away css syntax
       rgbString = rgbString.split("(")[1].split(")")[0];
 
       // turn into array
       rgbString = rgbString.split(',');
 
       // convert values
-      hex = rgbString.map(function (val) {  // for each item in array
+      hex = rgbString.map(function (val) {
         val = parseInt(val).toString(16);   // convert to hex
 
         if (val.length === 1) {
