@@ -13,6 +13,7 @@ app.registerModule('ui', function () {
         picker,
         eraser,
         filler,
+        clear,
         drawmode = 'color';
 
     var init = function () {
@@ -27,6 +28,7 @@ app.registerModule('ui', function () {
       picker = document.querySelector('#picker');
       eraser = document.querySelector('#eraser');
       filler = document.querySelector('#filler');
+      clear = document.querySelector('#clear-option');
 
       createPixels();
     };
@@ -53,9 +55,9 @@ app.registerModule('ui', function () {
         if (typeof targetColor !== 'undefined' && targetColor.length > 0) {
           targetColor = rgbToCssHex(targetColor);
         }
-        
+
         for (var i = 0; i < pixels.childNodes.length; i++) {
-          
+
           //console.log(pixels.childNodes[i].style.background.length);
 
           if (pixels.childNodes[i].style.background.length === 0) {
@@ -86,6 +88,7 @@ app.registerModule('ui', function () {
         }
       });
 
+      // TODO: consolidate event delegation, using data-attrib
       picker.addEventListener('mousedown', function (event) {
         toggleDrawMode('picker');
       });
@@ -98,7 +101,7 @@ app.registerModule('ui', function () {
         toggleDrawMode('filler');
       });
 
-      document.querySelector('#clear-option').addEventListener('mousedown', function (event) {
+      clear.addEventListener('mousedown', function (event) {
         for (var i = 0; i < pixels.childNodes.length; i++) {
             setPixelColor(pixels.childNodes[i], false);
         }
@@ -185,7 +188,7 @@ app.registerModule('ui', function () {
       } else {
         target.removeAttribute('style');
       }
-      
+
     };
 
     var getFrame = function () {
