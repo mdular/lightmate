@@ -194,8 +194,8 @@ app.registerModule('ui', function () {
       for (var i = 0; i < pixels.childNodes.length; i++) {
         var value = 0;
 
-        if (pixels.childNodes[i].style.background.length > 0) {
-          value = rgbToCssHex(pixels.childNodes[i].style.background);
+        if (pixels.childNodes[i].style.backgroundColor.length > 0) {
+          value = rgbToCssHex(pixels.childNodes[i].style.backgroundColor);
         }
 
         data.push(value);
