@@ -3,6 +3,8 @@ var MongoClient = require('mongodb').MongoClient,
     http = require('http'),
     server;
 
+var Router = require('./Router');
+
 var config = {
   mongoURI: 'mongodb://localhost:27017/lightmate',
   maxPostLength: 1e6, // 1.000.000 bytes
@@ -14,59 +16,9 @@ var config = {
   }
 }
 
-function requestHandler(req, response) {
-  var params = req.url.split('/');
-  params.shift();
+Router.configure(config);
 
-  if (req.method === 'GET') {
-    routeRequest(params, response, null);
-  } else if (req.method === 'POST') {
-    // TODO: csrf token validation
-    //       (needs to be persisted and rendered in template too...)
-    // currently this is an unlimited open write!
-
-    var body = '';
-    req.on('data', function (data) {
-      body += data;
-
-      if (body.length > config.maxPostLength) {
-        sendError(response, 413); // Request Entity Too Large
-        request.connection.destroy();
-      }
-    });
-    req.on('end', function () {
-      var data = JSON.parse(body);
-
-      routeRequest(params, response, data);
-    });
-  }
-}
-
-function routeRequest(params, response, postData) {
-  // TODO: serve static files
-  // TODO: default route
-  // TODO: route actions
-  // TODO: simple render
-
-  console.log("request", params);
-
-  if (typeof params[1] === 'undefined') {
-    if (params[0] === 'favicon.ico') {
-      return;
-    }
-    actions.load(params[0], response);
-  } else if (params[1] === 'save') {
-
-    actions.save(params[0], postData, response);
-  } else {
-    sendError(response, 404, 'Not found');
-  }
-
-  // TODO: test if action exists
-  // TODO: call actions with try catch, log error
-}
-
-var actions = {
+Router.actions = {
   save  : function (id, data, response) {
     var invalid = false,
         update = {};
@@ -194,7 +146,7 @@ MongoClient.connect(config.mongoURI, function (err, dbConnection) {
 
   // TODO: handle server independently of app / db connection
   //       > just route / static files
-  server = http.createServer(requestHandler);
+  server = http.createServer(Router.handler);
   server.listen(8888);
 
   console.dir('http server listening on 8888');
