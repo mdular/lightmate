@@ -53,6 +53,7 @@ app.registerModule('ui', function () {
         filler  : function (target) {
             var targetColor = target.style.backgroundColor;
 
+            // TODO: detect if adjacent (row +-1, col +-1)
             for (var i = 0; i < pixels.childNodes.length; i++) {
                 if (pixels.childNodes[i].style.backgroundColor === targetColor) {
                     setPixelColor(pixels.childNodes[i], color.value);
