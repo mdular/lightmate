@@ -1,9 +1,12 @@
 var MongoClient = require('mongodb').MongoClient,
-    db,
+    zlib = require ('zlib'),
     http = require('http'),
+    db,
     server;
 
 var Router = require('./Router');
+
+var id = Math.ceil(Math.random() * 20);
 
 var config = {
   mongoURI: 'mongodb://localhost:27017/lightmate',
@@ -12,7 +15,9 @@ var config = {
   historyLength: 10,
   defaultHeader: {
     // TODO: set proper origins when deploying this!
-    "Access-Control-Allow-Origin" : "*"
+    "Access-Control-Allow-Origin" : "*",
+    "Content-Encoding": "gzip",
+    "X-Server": id
   }
 }
 
@@ -131,9 +136,12 @@ function sendHeader(response, statusCode, contentType) {
 }
 
 function sendJSONResponse(response, data) {
-  sendHeader(response, 200, 'application/x-javascript');
-  response.write(JSON.stringify(data));
-  response.end();
+    zlib.gzip(JSON.stringify(data), function (_, result) {
+        sendHeader(response, 200, 'application/x-javascript');
+        response.write(result);
+        response.end();
+        console.log("server ", id, "responded");
+    });
 }
 
 MongoClient.connect(config.mongoURI, function (err, dbConnection) {
