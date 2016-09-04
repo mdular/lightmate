@@ -3,7 +3,8 @@
   "description": "persist lightmate frames",
   "author": "Markus J Doetsch mdular.com",
   "dependencies": {
-    "mongodb": "1.4.8"
+    "mongodb": "1.4.8",
+    "serialport": "^4.0.1"
   },
   "devDependencies": {},
   "engine": "node >= 0.10.30"

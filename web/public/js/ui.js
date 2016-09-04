@@ -18,7 +18,6 @@ app.registerModule('ui', function () {
 
     var init = function () {
         setup();
-        //enableDrawing();
     };
 
     var setup = function () {
@@ -30,7 +29,7 @@ app.registerModule('ui', function () {
         filler = document.querySelector('#filler');
         clear = document.querySelector('#clear-option');
 
-        createPixels();
+        createPixels(64);
     };
 
     var drawModes = {
@@ -38,7 +37,7 @@ app.registerModule('ui', function () {
             setPixelColor(target, color.value);
         },
         picker  : function (target) {
-            var rgb = target.style.background;
+            var rgb = target.style.backgroundColor;
 
             if (typeof rgb !== 'undefined' && rgb.length > 0) {
                 color.value = rgbToCssHex(rgb);
@@ -144,10 +143,10 @@ app.registerModule('ui', function () {
       return template[0].cloneNode(true);
     };
 
-    var createPixels = function () {
+    var createPixels = function (amount) {
       var html = '';
 
-      for (var i = 0; i < 64; i++) {
+      for (var i = 0; i < amount; i++) {
         var pixel = getTemplate('pixel');
 
         pixels.appendChild(pixel);

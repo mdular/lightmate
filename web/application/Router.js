@@ -1,9 +1,12 @@
 var config;
 
 var Router = {
+    actions : {},
+
     configure: function (conf) {
         config = conf;
     },
+
     handler: function (req, response) {
         var params = req.url.split('/');
         params.shift();
@@ -30,6 +33,7 @@ var Router = {
             });
         }
     },
+
     route: function (params, response, postData) {
         // TODO: serve static files
         // TODO: default route
@@ -40,18 +44,38 @@ var Router = {
 
         console.log("request", params);
 
-        if (typeof params[1] === 'undefined') {
-            if (params[0] === 'favicon.ico') {
+        switch (params[0]) {
+            case 'favicon.ico':
                 return;
-            }
-            Router.actions.load(params[0], response);
-        } else if (params[1] === 'save') {
-            Router.actions.save(params[0], postData, response);
-        } else {
-            sendError(response, 404, 'Not found');
+                break;
+            case 'load':
+                this.actions.load(params[1], response);
+                break;
+            case 'save':
+                this.actions.save(params[1], postData, response);
+                break;
+            case 'draw':
+                this.actions.draw(postData, response);
+                break;
+            default:
+                this.sendError(response, 404, 'Not found');
+                break;
         }
     },
-    actions : {}
+
+    sendError: function (response, statusCode, message) {
+        this.sendHeader(response, statusCode, 'text/plain');
+        if (typeof message !== 'undefined') {
+            response.write(message);
+        }
+        response.end();
+    },
+
+    sendHeader: function (response, statusCode, contentType) {
+        var header = config.defaultHeader;
+        header["Content-Type"] = contentType;
+        response.writeHead(statusCode, header);
+    }
 };
 
 module.exports = Router;

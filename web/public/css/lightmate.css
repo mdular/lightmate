@@ -18,7 +18,7 @@ a {
 
 
 #color, #pixels, #options, #history {
-  width: 176px;
+  width: 180px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -77,8 +77,9 @@ a {
 
 /* pixels */
 #pixels {
-  height: 176px;
+  height: 180px;
   margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 .pixel {

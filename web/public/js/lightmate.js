@@ -33,6 +33,10 @@ app.registerController('lightmate', function () {
           history.setHistory(data.history);
         });
       });
+
+      pixels.addEventListener('draw', function (event) {
+          data.draw(ui.getFrame());
+      });
     };
 
     // TODO: action concept

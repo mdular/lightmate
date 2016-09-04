@@ -23,25 +23,21 @@ app.registerModule('data', function () {
 
         req.addEventListener('progress', function (event) {
             //console.log('progress', event);
-
             callback(event);
         });
 
         req.addEventListener('load', function (event) {
             //console.log('load', event);
-
             callback(event);
         });
 
         req.addEventListener('error', function (event) {
             //console.log('error', event);
-
             callback(event);
         });
 
         req.addEventListener('abort', function (event) {
             //console.log('abort', event);
-
             callback(event);
         });
 
@@ -54,6 +50,16 @@ app.registerModule('data', function () {
         }
     }
 
+    var draw = function (data) {
+        ajax(url + 'draw', data, function (event) {
+            if (event.type === "load" && event.target.status === 200) {
+                console.log("draw OK");
+            } else if (event.target.status !== 200) {
+                console.log("draw error", event.target.status);
+            }
+        });
+    }
+
     var save = function (data) {
         if (typeof id === 'undefined' || !id) {
             throw new Error('no id!');
@@ -62,7 +68,7 @@ app.registerModule('data', function () {
 
         data.reference = id;
 
-        ajax(url + id + '/save', data, function (event) {
+        ajax(url + 'save/' + id, data, function (event) {
             if (event.type === "load" && event.target.status === 200) {
                 console.log('save OK');
             } else if (event.target.status !== 200) {
@@ -77,7 +83,7 @@ app.registerModule('data', function () {
             return;
         }
 
-        ajax(url + id, false, function (event) {
+        ajax(url + 'load/' + id, false, function (event) {
             if (event.type === 'load' && event.target.status === 200) {
                 callback(JSON.parse(event.target.response));
             } else if (event.target.status !== 200) {
@@ -88,6 +94,7 @@ app.registerModule('data', function () {
 
     return {
         init      : init,
+        draw      : draw,
         save      : save,
         load      : load
     };

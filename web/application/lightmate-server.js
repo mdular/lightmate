@@ -4,6 +4,27 @@ var MongoClient = require('mongodb').MongoClient,
     db,
     server;
 
+var SerialPort = require('serialport');
+
+sp = new SerialPort(process.env.PORT, {
+    baudRate: 9600,
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1,
+    flowControl: false,
+    parser: SerialPort.parsers.readline('\r\n')
+});
+
+sp.on('open', function () {
+    console.log('serial connection established.');
+})
+
+sp.on('data', function (input) {
+    console.log('recieved serial data:', input);
+});
+
+
+
 var Router = require('./Router');
 
 var id = Math.ceil(Math.random() * 20);
@@ -21,9 +42,85 @@ var config = {
   }
 }
 
+
+serial = {
+    q: [],
+    running: false,
+    queue: function (data) {
+        this.q.push(data);
+
+        this.run();
+    },
+    run: function() {
+        if (this.running) {
+            return;
+        }
+
+        if (!this.q.length) {
+            this.running = false;
+            return;
+        }
+
+        this.running = true;
+        console.log('running queue', this.q.length);
+
+
+        let val = this.q.shift();
+
+        console.log('writing', val);
+        sp.write(val.toString(10), function (err, result) {
+            if (err) throw new Error(err);
+
+            // console.log('write result (bytes):', result);
+            setTimeout(function () {
+                serial.running = false;
+                serial.run();
+            }, 15);
+        });
+    }
+}
+
+
 Router.configure(config);
 
 Router.actions = {
+  draw: function (data, response) {
+    //   console.log('draw', data);
+      // validate pixels
+      if (typeof data === 'undefined' || data.length !== config.pixelAmount) {
+          console.dir('invalid draw request', data);
+          Router.sendError(response, 400); // Bad request
+          return;
+      }
+
+      // TODO: write to serialport
+      for (let i in data) {
+          let val = data[i];
+
+          if (val !== 0) {
+              val = val.replace(/#/, '');
+              val = parseInt(val, 16);
+
+              var r = (val >> 16) & 255;
+              var g = (val >> 8) & 255;
+              var b = val & 255;
+
+            //   console.log( r + "," + g + "," + b);
+              serial.queue(r);
+              serial.queue(g);
+              serial.queue(b);
+          } else {
+              serial.queue(0);
+              serial.queue(0);
+              serial.queue(0);
+          }
+      }
+
+      Router.sendHeader(response, 200, 'text/html');
+      response.end();
+      console.log("server ", id, "responded");
+  },
+
   save  : function (id, data, response) {
     var invalid = false,
         update = {};
@@ -32,6 +129,7 @@ Router.actions = {
 
     // prepare update data
     // TODO: strict validation for expected values!
+
     // validate pixels
     if (typeof data.pixels !== 'undefined' && data.pixels.length == config.pixelAmount) {
       update.pixels = data.pixels;
@@ -62,7 +160,7 @@ Router.actions = {
 
     if (invalid) {
       console.dir('invalid save request', data);
-      sendError(response, 400); // Bad request
+      Router.sendError(response, 400); // Bad request
       return;
     }
 
@@ -85,7 +183,7 @@ Router.actions = {
       function (err, doc) {
         if (err) {
           console.dir(err);
-          sendError(response, 500); // Internal server error
+          Router.sendError(response, 500); // Internal server error
           return;
         }
 
@@ -107,12 +205,12 @@ Router.actions = {
     function (err, doc) {
       if (err) {
         console.dir(err);
-        sendError(response, 500); // Internal server error
+        Router.sendError(response, 500); // Internal server error
         return;
       }
 
       if (!doc) {
-        sendError(response, 404, 'Not Found'); // Not found
+        Router.sendError(response, 404, 'Not Found'); // Not found
       } else {
         sendJSONResponse(response, doc);
       }
@@ -120,24 +218,9 @@ Router.actions = {
   }
 }
 
-function sendError(response, statusCode, message) {
-  sendHeader(response, statusCode, 'text/plain');
-  if (typeof message !== 'undefined') {
-    response.write(message);
-  }
-  response.end();
-}
-
-function sendHeader(response, statusCode, contentType) {
-  var header = config.defaultHeader;
-  header["Content-Type"] = contentType;
-
-  response.writeHead(statusCode, header);
-}
-
 function sendJSONResponse(response, data) {
     zlib.gzip(JSON.stringify(data), function (_, result) {
-        sendHeader(response, 200, 'application/x-javascript');
+        Router.sendHeader(response, 200, 'application/x-javascript');
         response.write(result);
         response.end();
         console.log("server ", id, "responded");
