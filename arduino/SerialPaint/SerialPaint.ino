@@ -1,6 +1,6 @@
 
-#include <Wire.h>
-#include <avr/pgmspace.h> 
+//#include <Wire.h>
+#include <avr/pgmspace.h>
 
 
 /*******************************************
@@ -69,17 +69,23 @@ void setup()
   DispShowColor(0, 0, 0);
 }
 
+// TODO: receive byte values instead (currently assuming ascii chars are sent)
+// TODO: receive to byte array, fixed length instead of String object
+// layout: [command byte][data byte 1 (red)][data byte 2 (green)][data byte 3 (blue)] {delimiting byte - triggers processing}
 String val = "";
-unsigned char frame[8][8][3] = {0}; // TODO: use the inactive page buffer instead, then switch
+//char *val[3] = {""};
+//unsigned char frame[8][8][3] = {0}; // TODO: use the inactive page buffer instead, then switch
 int lastInput = 0;
 
-int inputCount = 0;
+byte inputCount = 0;
+byte currentIndex = 0;
 byte currentRow = 7;
 byte currentCol = 0;
 byte currentColor = 0;
 
 void loop()
 {
+//  String val = "";
   while (Serial.available()) {
     char incomingByte = Serial.read();
 
@@ -119,6 +125,7 @@ void loop()
     }
   }
 
+  // TODO: process full RGB int
   if (!Serial.available() && val != "" && lastInput > DELIMITING_CYCLES) {
 
 //    Serial.println(val.toInt(), HEX);
@@ -146,7 +153,13 @@ void loop()
     }
 
     // write to frame
-    frame[currentRow][currentCol][currentColor] = atoi(val.c_str());
+    if (Page_Index == 0) {
+      currentIndex = 1;
+    } else if (Page_Index == 1) {
+      currentIndex = 0;
+    }
+//    frame[currentRow][currentCol][currentColor] = atoi(val.c_str());
+    dots[currentIndex][currentRow][currentCol][currentColor] = atoi(val.c_str());
 
     // move on to the next color
     currentColor++;
@@ -158,7 +171,10 @@ void loop()
     if (inputCount >= 192) {
         Serial.println("frame complete");
     
-        DispDrawPic(frame);
+//        DispDrawPic(frame);
+        Page_Index = currentIndex;
+
+        // TODO: save to EEPROM to redraw after reset
  
         lastInput = DELIMITING_CYCLES + 1;
         inputCount = 0;
