@@ -4,44 +4,13 @@ var MongoClient = require('mongodb').MongoClient,
     db,
     server;
 
-var SerialPort = require('serialport');
-
-sp = new SerialPort(process.env.PORT, {
-    baudRate: 9600,
-    dataBits: 8,
-    parity: 'none',
-    stopBits: 1,
-    flowControl: false,
-    parser: SerialPort.parsers.readline('\r\n')
-});
-
-sp.on('open', function () {
-    console.log('serial connection established.');
-})
-
-sp.on('data', function (input) {
-    console.log('recieved serial data:', input);
-});
-
-
-
+var SerialPort = require('./SerialPort');
 var Router = require('./Router');
 
-var id = Math.ceil(Math.random() * 20);
-
-var config = {
-  mongoURI: 'mongodb://localhost:27017/lightmate',
-  maxPostLength: 1e6, // 1.000.000 bytes
-  pixelAmount: 64,
-  historyLength: 10,
-  defaultHeader: {
-    // TODO: set proper origins when deploying this!
-    "Access-Control-Allow-Origin" : "*",
-    "Content-Encoding": "gzip",
-    "X-Server": id
-  }
-}
-
+SerialPort.start(process.env.PORT);
+SerialPort.listen(function (message) {
+    console.log('recieved serial data:', message);
+})
 
 serial = {
     q: [],
@@ -64,11 +33,9 @@ serial = {
         this.running = true;
         console.log('running queue', this.q.length);
 
-
         let val = this.q.shift();
-
-        console.log('writing', val);
-        sp.write(val.toString(10), function (err, result) {
+        // console.log('writing', val);
+        SerialPort.send(val.toString(10), function (err, result) {
             if (err) throw new Error(err);
 
             // console.log('write result (bytes):', result);
@@ -80,7 +47,18 @@ serial = {
     }
 }
 
-
+var config = {
+  mongoURI: 'mongodb://localhost:27017/lightmate',
+  maxPostLength: 1e6, // 1.000.000 bytes
+  pixelAmount: 64,
+  historyLength: 10,
+  defaultHeader: {
+    // TODO: set proper origins when deploying this!
+    "Access-Control-Allow-Origin" : "*",
+    "Content-Encoding": "gzip",
+    "X-Server": Math.ceil(Math.random() * 20)
+  }
+}
 Router.configure(config);
 
 Router.actions = {
@@ -118,7 +96,6 @@ Router.actions = {
 
       Router.sendHeader(response, 200, 'text/html');
       response.end();
-      console.log("server ", id, "responded");
   },
 
   save  : function (id, data, response) {
