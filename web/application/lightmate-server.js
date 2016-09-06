@@ -15,9 +15,10 @@ SerialPort.listen(function (message) {
 serial = {
     q: [],
     running: false,
+    time: null,
     queue: function (data) {
         this.q.push(data);
-
+        this.time = new Date();
         this.run();
     },
     run: function() {
@@ -27,22 +28,24 @@ serial = {
 
         if (!this.q.length) {
             this.running = false;
+            console.log('serial queue drained after ' + ((new Date()).getTime() - this.time.getTime()) + ' msec');
             return;
         }
 
         this.running = true;
-        console.log('running queue', this.q.length);
+        // console.log('running queue', this.q.length);
 
         let val = this.q.shift();
         // console.log('writing', val);
-        SerialPort.send(val.toString(10), function (err, result) {
+        SerialPort.send(val + '\n', function (err, result) {
             if (err) throw new Error(err);
 
             // console.log('write result (bytes):', result);
+            // workaround for Abort trab: 6 issue
             setTimeout(function () {
                 serial.running = false;
                 serial.run();
-            }, 15);
+            }, 1);
         });
     }
 }
@@ -77,20 +80,22 @@ Router.actions = {
 
           if (val !== 0) {
               val = val.replace(/#/, '');
-              val = parseInt(val, 16);
+            //   val = parseInt(val, 16);
 
-              var r = (val >> 16) & 255;
-              var g = (val >> 8) & 255;
-              var b = val & 255;
+            //   var r = (val >> 16) & 255;
+            //   var g = (val >> 8) & 255;
+            //   var b = val & 255;
 
             //   console.log( r + "," + g + "," + b);
-              serial.queue(r);
-              serial.queue(g);
-              serial.queue(b);
+            //   serial.queue(r);
+            //   serial.queue(g);
+            //   serial.queue(b);
+            serial.queue(val);
           } else {
-              serial.queue(0);
-              serial.queue(0);
-              serial.queue(0);
+            //   serial.queue(0);
+            //   serial.queue(0);
+            //   serial.queue(0);
+            serial.queue('000000');
           }
       }
 
@@ -200,7 +205,7 @@ function sendJSONResponse(response, data) {
         Router.sendHeader(response, 200, 'application/x-javascript');
         response.write(result);
         response.end();
-        console.log("server ", id, "responded");
+        // console.log("server ", id, "responded");
     });
 }
 

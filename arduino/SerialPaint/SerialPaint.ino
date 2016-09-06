@@ -55,7 +55,6 @@ void setup()
   _LED_Init();          //Init LED Hardware
   _TC2_Init();          //Init Timer/Count2
 
-  
 //  DispShowPic(0);
 //  delay(1000);
 
@@ -69,13 +68,13 @@ void setup()
   DispShowColor(0, 0, 0);
 }
 
-// TODO: receive byte values instead (currently assuming ascii chars are sent)
-// TODO: receive to byte array, fixed length instead of String object
-// layout: [command byte][data byte 1 (red)][data byte 2 (green)][data byte 3 (blue)] {delimiting byte - triggers processing}
-String val = "";
-//char *val[3] = {""};
-//unsigned char frame[8][8][3] = {0}; // TODO: use the inactive page buffer instead, then switch
+// TODO: receive byte values instead (currently assuming ascii chars are sent, interpreted as hex)
+// desired layout: [command byte][data byte 1 (red)][data byte 2 (green)][data byte 3 (blue)] {delimiting byte - triggers processing}
+// current layout: [red hex byte 1][red hex byte 2][green hex byte 1][green hex byte 2][blue hex byte 1][blue hex byte 2]
+char val[7];
+byte valIndex = 0;
 int lastInput = 0;
+boolean received = false;
 
 byte inputCount = 0;
 byte currentIndex = 0;
@@ -85,62 +84,67 @@ byte currentColor = 0;
 
 void loop()
 {
-//  String val = "";
   while (Serial.available()) {
     char incomingByte = Serial.read();
+    lastInput = 0;
 
-//    switch (incomingByte) {
-//      case 65:
-//        incomingByte = 10;
-//        break;
-//      case 66:
-//        incomingByte = 11;
-//        break;
-//      case 67:
-//        incomingByte = 12;
-//        break;
-//      case 68:
-//        incomingByte = 13;
-//        break;
-//      case 69:
-//        incomingByte = 14;
-//        break;
-//      case 70:
-//        incomingByte = 15;
-//        break;
-//      default:
-//        incomingByte -= 48;
-//    }
-//
-//    Serial.println(incomingByte, DEC);
+    // buffer only the first 6 bytes
+    if (valIndex < 6 && incomingByte != '\n') {
+      val[valIndex] = incomingByte;
+      valIndex++;
+    }
 
-    // delimit if terminated by line feed, otherwise continue reading
+    // delimit & process if terminated by line feed
     if (incomingByte == '\n') {
       lastInput = DELIMITING_CYCLES + 1;
-    } else {
-      lastInput = 0;
-
-      val += incomingByte;
-      // TODO: explode comma separated values
+      received = true;
+      val[6] = '\0'; // null-terminate char array
+      return;
     }
   }
 
+  if (valIndex > 0 && lastInput > DELIMITING_CYCLES) {
+    // TODO: handle packet failure
+  }
+
   // TODO: process full RGB int
-  if (!Serial.available() && val != "" && lastInput > DELIMITING_CYCLES) {
+  if (received) {
+//    Serial.println(val);
+//    Serial.println(hexToByte(val[0]));  // r
+//    Serial.println(hexToByte(val[1]));  // r
+//    Serial.println(hexToByte(val[2]));  // g
+//    Serial.println(hexToByte(val[3]));  // g
+//    Serial.println(hexToByte(val[4]));  // b
+//    Serial.println(hexToByte(val[5]));  // b
+    
+    byte redByte = hexToByte(val[0]) << 4;
+    redByte += hexToByte(val[1]);
+//    Serial.println(redByte, DEC);
 
-//    Serial.println(val.toInt(), HEX);
+    byte greenByte = hexToByte(val[2]) << 4;
+    greenByte += hexToByte(val[3]);
+//    Serial.println(greenByte, DEC);
 
-    // TODO: detect & skip comma (it should be a delimiter, much like \n, but write the color to the frame)
-    // TODO: switch to hex values, bit shift
-
+    byte blueByte = hexToByte(val[4]) << 4;
+    blueByte += hexToByte(val[5]);
+//    Serial.println(blueByte, DEC);
+    
+    val[0] = 0;
+    val[1] = 0;
+    val[2] = 0;
+    val[3] = 0;
+    val[4] = 0;
+    val[5] = 0;
+    received = false;
+    valIndex = 0;
 
 //    DispShowChar(val.charAt(0),0,255,0,0);
 
     // process pixel
-    if (currentColor > 2) {
-      currentColor = 0;
-      currentCol++;
-    }
+//    if (currentColor > 2) {
+//      currentColor = 0;
+//      currentCol++;
+//    }
 
     // shift row
     if (currentCol > 7) {
@@ -148,35 +152,41 @@ void loop()
       currentRow--;
     }
 
+    // shift row
     if (currentRow < 0) {
       currentRow = 7;
     }
 
-    // write to frame
+    // determine write buffer
     if (Page_Index == 0) {
       currentIndex = 1;
     } else if (Page_Index == 1) {
       currentIndex = 0;
     }
-//    frame[currentRow][currentCol][currentColor] = atoi(val.c_str());
-    dots[currentIndex][currentRow][currentCol][currentColor] = atoi(val.c_str());
+
+    // write to buffer
+    dots[currentIndex][currentRow][currentCol][0] = redByte;
+    dots[currentIndex][currentRow][currentCol][1] = greenByte;
+    dots[currentIndex][currentRow][currentCol][2] = blueByte;
 
     // move on to the next color
-    currentColor++;
+//    currentColor++;
+
+    // move on the the next pixel
+    currentCol++;
+
+    // keep track of received pixels
     inputCount++;
-    
-    val = "";
 
     // draw when frame is complete
-    if (inputCount >= 192) {
+    if (inputCount >= 64) {
         Serial.println("frame complete");
-    
-//        DispDrawPic(frame);
+
+        // switch active buffer page - draw!
         Page_Index = currentIndex;
 
         // TODO: save to EEPROM to redraw after reset
  
-        lastInput = DELIMITING_CYCLES + 1;
         inputCount = 0;
         currentColor = 0;
         currentCol = 0;
@@ -185,6 +195,15 @@ void loop()
   }
 
   lastInput++;
+}
+
+byte hexToByte (char c) {
+  if ( (c >= '0') && (c <= '9') ) {
+    return c - '0';
+  }
+  if ( (c >= 'A') && (c <= 'F') ) {
+    return (c - 'A') + 10;
+  }
 }
 
 void DispDrawPic(unsigned char pixels[8][8][3]) {
