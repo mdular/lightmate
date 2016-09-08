@@ -12,44 +12,6 @@ SerialPort.listen(function (message) {
     console.log('recieved serial data:', message);
 })
 
-serial = {
-    q: [],
-    running: false,
-    time: null,
-    queue: function (data) {
-        this.q.push(data);
-        this.time = new Date();
-        this.run();
-    },
-    run: function() {
-        if (this.running) {
-            return;
-        }
-
-        if (!this.q.length) {
-            this.running = false;
-            console.log('serial queue drained after ' + ((new Date()).getTime() - this.time.getTime()) + ' msec');
-            return;
-        }
-
-        this.running = true;
-        // console.log('running queue', this.q.length);
-
-        let val = this.q.shift();
-        // console.log('writing', val);
-        SerialPort.send(val + '\n', function (err, result) {
-            if (err) throw new Error(err);
-
-            // console.log('write result (bytes):', result);
-            // workaround for Abort trab: 6 issue
-            setTimeout(function () {
-                serial.running = false;
-                serial.run();
-            }, 1);
-        });
-    }
-}
-
 var config = {
   mongoURI: 'mongodb://localhost:27017/lightmate',
   maxPostLength: 1e6, // 1.000.000 bytes
@@ -78,6 +40,11 @@ Router.actions = {
       for (let i in data) {
           let val = data[i];
 
+          // simulate 4 pixel (24 byte) packet
+        //   if (i > 15) {
+        //       break;
+        //   }
+
           if (val !== 0) {
               val = val.replace(/#/, '');
             //   val = parseInt(val, 16);
@@ -90,12 +57,12 @@ Router.actions = {
             //   serial.queue(r);
             //   serial.queue(g);
             //   serial.queue(b);
-            serial.queue(val);
+            SerialPort.queue(val);
           } else {
             //   serial.queue(0);
             //   serial.queue(0);
             //   serial.queue(0);
-            serial.queue('000000');
+            SerialPort.queue('000000');
           }
       }
 
