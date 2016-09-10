@@ -1,6 +1,7 @@
 /**
  * lightweight application manager
- * @author Markus J Doetsch mdular.com
+ * @author Markus J Doetsch
+ * https://github.com/mdular/app.js
  *
  * register page controllers like this:
  * app.registerController('myController, myModule[FunctionWrapper]);
@@ -16,10 +17,10 @@
  *
  * modules are invoked before the controller
  *
- * TODO: implement a window.load trigger for controllers and initialize on dom ready.. needs IE8-safe implementation -> this is currently solved using aight.js
+ * TODO: implement additional window.load callback for controllers (to simplify lazy loading scripting)
  * TODO: inject module references into the controller
  */
-/* global app:true */
+/* global app:true, aight */
 
 var app = (function () {
     "use strict";
@@ -27,17 +28,54 @@ var app = (function () {
     var modules = [];
     var globalModules = [];
 
-    var init = function (modulesToRun) {
-        for (var k = 0; k < globalModules.length; k++) {
-            modulesToRun.push(globalModules[k]);
-        }
+    // 'load' or 'DOMContentLoaded'
+    var listen = function (event) {
 
-        for (var i = 0; i < modulesToRun.length; i++) {
+        window.addEventListener(event, function () {
+            start();
+        });
+
+        // solve 'DOMContentLoaded' for IE < 8
+        if (
+            event === 'DOMContentLoaded'
+            && typeof document.documentMode !== 'undefined'
+            && document.documentMode === 8
+        ) {
+            // doScroll test method
+            var t = window.setInterval(function() {
+                if (window.document.body) {
+                    // Check for doScroll success
+                    try {
+                        window.document.createElement('div').doScroll('left');
+                        window.clearInterval(t);
+                    } catch(e) {
+                        return;
+                    }
+                    start();
+                }
+            }, 10);
+        }
+    };
+
+    var start = function () {
+        var body = document.getElementsByTagName('body')[0],
+            modules = body.getAttribute('data-modules') || '',
+            controller = body.getAttribute('id') || '';
+
+        init(modules.split(' '));
+        run([controller]);
+    };
+
+    var init = function (modulesToRun) {
+        modulesToRun = modulesToRun.concat(globalModules);
+
+        for (var i = 0, count = modulesToRun.length; i < count; i++) {
             invoke(modulesToRun[i]);
         }
     };
 
     var run = function (controllerName) {
+        // fail nonexisting controllers silently
         if (modules[controllerName] === undefined) {
             return;
         }
@@ -52,7 +90,7 @@ var app = (function () {
 
     var reset = function (moduleName) {
         if (modules[moduleName] === undefined) {
-            return;
+            throw new Error('Trying to reset non-existing module: ' + moduleName);
         }
 
         modules[moduleName].init = false;
@@ -81,7 +119,7 @@ var app = (function () {
 
         // init present?
         if (typeof module.init !== 'function') {
-            throw new Error('invalid style: no init() found in ' + identifier);
+            throw new Error('invalid style: no init() found in: ' + identifier);
         }
 
         // finally, run it
@@ -118,23 +156,12 @@ var app = (function () {
     };
 
     return {
-        init                : init,
-        run                 : run,
+        listen              : listen,
         reset               : reset,
-        modules             : modules,
         registerController  : registerController,
         registerModule      : registerModule,
         getModule           : getModule
     };
 }());
 
-window.addEventListener('load', function () {
-    "use strict";
-
-    var body = document.getElementsByTagName('body')[0],
-        modules = body.getAttribute('data-modules') || '',
-        controller = body.getAttribute('id') || '';
-
-    app.init.apply(app, [modules.split(' ')]);
-    app.run.apply(app, [controller]);
-});
+app.listen('DOMContentLoaded');
