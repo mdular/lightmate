@@ -1,6 +1,7 @@
 var SerialPort = require('./SerialPort');
 
-SerialPort.start('/dev/cu.usbmodem1411');
+// SerialPort.start('/dev/cu.usbmodem1411');
+SerialPort.start('/dev/cu.lightmate-DevB');
 SerialPort.listen(function (message) {
     console.log('recieved serial data:', message);
 })

@@ -61,6 +61,7 @@ void loop() {
   if (!ATSerial.available()) {
     if (messageTimeout > timeoutThreshold && outMessage != "") {
       Serial.println(outMessage);
+      ATSerial.println(outMessage);
       outMessage = "";
       messageTimeout = -1;
     } else if (messageTimeout >= 0) {
