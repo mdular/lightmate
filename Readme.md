@@ -4,4 +4,4 @@
 mongod -f /usr/local/etc/mongod.conf
 
 # start lightmate server
-PORT="/dev/cu.usbmodem1411" node web/application/lightmate-server.js 
+PORT="/dev/cu.lightmate-DevB" node web/application/lightmate-server.js 
