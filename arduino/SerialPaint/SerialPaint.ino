@@ -2,6 +2,9 @@
 //#include <Wire.h>
 #include <avr/pgmspace.h>
 
+/*
+ * TODO: software serial
+ */
 
 /*******************************************
 define the data zone
@@ -48,12 +51,18 @@ extern unsigned char pic[4][8][8][3];
 Main Functions zone
 ****************************************************/
 void setup()
-{
-  Serial.begin(9600);
-  
+{  
   _IO_Init();           //Init IO
   _LED_Init();          //Init LED Hardware
   _TC2_Init();          //Init Timer/Count2
+
+  DispShowColor(0, 0, 0);
+
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
+  delay(500);
+  Serial.begin(9600);
+  Serial.println("lightmate");
 
 //  DispShowPic(0);
 //  delay(1000);
@@ -65,7 +74,14 @@ void setup()
 //  delay(1000);
 //  DispShowColor(0, 0, 255);
 //  delay(1000);
-  DispShowColor(0, 0, 0);
+//  DispShowColor(0, 0, 0);
+
+  /*
+   * TODO: create a "waiting to connect" mode with animation
+   * TODO: bluetooth module setup on first run, save in EEPROM
+   *  name: lightmate
+   *  pin: 0000
+   */
 }
 
 // TODO: receive byte values instead (currently assuming ascii chars are sent, interpreted as hex)
@@ -83,7 +99,7 @@ byte currentCol = 0;
 byte currentColor = 0;
 
 void loop()
-{
+{  
   while (Serial.available()) {
     char incomingByte = Serial.read();
     lastInput = 0;
@@ -97,6 +113,7 @@ void loop()
     // delimit & process if terminated by line feed
     if (incomingByte == '\n') {
       lastInput = DELIMITING_CYCLES + 1;
+      // TODO: validate input buffer length
       received = true;
       val[6] = '\0'; // null-terminate char array
       return;
