@@ -1,10 +1,15 @@
-var config;
+var zlib = require ('zlib');
 
 var Router = {
     actions : {},
+    config: {},
 
     configure: function (conf) {
-        config = conf;
+        this.config = conf;
+    },
+
+    setActions: function (actions) {
+        this.actions = actions;
     },
 
     handler: function (req, response) {
@@ -22,7 +27,7 @@ var Router = {
             req.on('data', function (data) {
                 body += data;
 
-                if (body.length > config.maxPostLength) {
+                if (body.length > Router.config.maxPostLength) {
                     sendError(response, 413); // Request Entity Too Large
                     request.connection.destroy();
                 }
@@ -66,15 +71,28 @@ var Router = {
     sendError: function (response, statusCode, message) {
         this.sendHeader(response, statusCode, 'text/plain');
         if (typeof message !== 'undefined') {
-            response.write(message);
+            this.sendResonse(response, message);
         }
-        response.end();
+
     },
 
     sendHeader: function (response, statusCode, contentType) {
-        var header = config.defaultHeader;
-        header["Content-Type"] = contentType;
+        var header = this.config.defaultHeader;
+        header["Content-Type"] = contentType ? contentType : 'text/plain';
         response.writeHead(statusCode, header);
+    },
+
+    sendResonse: function (response, data) {
+        zlib.gzip(data, (_, result) => {
+            response.write(result);
+            response.end();
+            // console.log("server ", id, "responded");
+        });
+    },
+
+    sendJSONResponse: function (response, data) {
+        this.sendHeader(response, 200, 'application/x-javascript');
+        this.sendResonse(response, JSON.stringify(data));
     }
 };
 
