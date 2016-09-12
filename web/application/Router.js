@@ -16,6 +16,8 @@ var Router = {
         var params = req.url.split('/');
         params.shift();
 
+        // TODO: sanitisation (trim, reg test) should happen here
+
         if (req.method === 'GET') {
             Router.route(params, response, null);
         } else if (req.method === 'POST') {
@@ -54,10 +56,10 @@ var Router = {
                 return;
                 break;
             case 'load':
-                this.actions.load(params[1], response);
+                this.actions.load(params[1].trim(), response);
                 break;
             case 'save':
-                this.actions.save(params[1], postData, response);
+                this.actions.save(params[1].trim(), postData, response);
                 break;
             case 'draw':
                 this.actions.draw(postData, response);
@@ -72,8 +74,9 @@ var Router = {
         this.sendHeader(response, statusCode, 'text/plain');
         if (typeof message !== 'undefined') {
             this.sendResonse(response, message);
+        } else {
+            response.end();
         }
-
     },
 
     sendHeader: function (response, statusCode, contentType) {

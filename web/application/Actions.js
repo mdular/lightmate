@@ -20,8 +20,8 @@ var Actions = {
         // TODO: write to client
         console.log("TODO: write to client");
 
-        Router.sendHeader(response, 200);
-        response.end();
+            Router.sendError(response, 200);
+        })
     },
 
     save  : function (id, data, response) {

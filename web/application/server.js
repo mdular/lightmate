@@ -19,30 +19,43 @@ var config = {
         "Content-Encoding": "gzip",
         "X-Server": Math.ceil(Math.random() * 20)
     },
-    listenPort: 8888
+    httpListenPort: 8888,
 }
 
+/**
+ * http routing
+ */
+Router.configure({
+ "maxPostLength": config.maxPostLength,
+ "defaultHeader": config.defaultHeader
+});
 Actions.configure({
     pixelAmount: config.pixelAmount,
     historyLength: config.historyLength
 });
 
-Router.configure({
-    "maxPostLength": config.maxPostLength,
-    "defaultHeader": config.defaultHeader
-});
+// mount actions
 Router.setActions(Actions);
 
+
+/**
+ * data store
+ */
 Store.connect({
     "mongoURI": config.mongoURI
 });
 
-// TODO: handle server independently of app / db connection
-//       > just route / static files
-server = http.createServer(Router.handler);
-server.on("error", function (e) {
-    throw e;
-})
-server.listen(config.listenPort, function () {
-    console.dir('http server listening on 8888');
+
+/**
+ * http server
+ */
+ // TODO: behind nginx for production
+ // TODO: handle server independently of app / db connection
+ //       > just route / static files
+ server = http.createServer(Router.handler);
+ server.on("error", function (e) {
+     throw e;
+ })
+ server.listen(config.httpListenPort, function () {
+     console.dir('http server listening on 8888');
 });

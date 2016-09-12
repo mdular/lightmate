@@ -4,7 +4,9 @@ var Store = {
     db: null,
     connect: function (config) {
         MongoClient.connect(config.mongoURI, (err, dbConnection) => {
-          if (err) throw err;
+          if (err) {
+              throw err;
+          }
 
           // TODO: handle mongo connection loss, retry, error
 
@@ -15,6 +17,7 @@ var Store = {
     loadFrame: function (id, callback) {
         if (!this.db) {
             callback(new Error("No db connection"));
+            return;
         }
 
         this.db.collection('frames').findOne(
@@ -34,6 +37,7 @@ var Store = {
     saveFrame: function (id, data, callback) {
         if (!this.db) {
             callback(new Error("No db connection"));
+            return;
         }
 
         this.db.collection('frames').findAndModify(
