@@ -2,11 +2,15 @@ var http = require('http');
 var Router = require('./Router');
 var Actions = require("./Actions");
 var Store = require("./Store");
+var SocketServer = require("./SocketServer");
 
 // TODO: bind frames to user account (guest users get random id, access by URL possible, registration required for pw protection)
 // TODO: 10 frames per user
 // TODO: "live" mode, "draw" trigger
-// TODO: client ID, attach client to account
+// TODO: client ID, attach client to account - access page via URL (even if guest, create "release" option for client UI!);
+// client (id ref) > server (url ref, can be password protected)
+// frames 'page' stays 1-10, 'ref' becomes server url ref
+// unresistered, unused server url refs (accounts) get purged / ref released, could be reused (random chance)
 
 var config = {
     mongoURI: 'mongodb://localhost:27017/lightmate',
@@ -20,6 +24,7 @@ var config = {
         "X-Server": Math.ceil(Math.random() * 20)
     },
     httpListenPort: 8888,
+    tcpListenPort: 8124
 }
 
 /**
@@ -58,4 +63,13 @@ Store.connect({
  })
  server.listen(config.httpListenPort, function () {
      console.dir('http server listening on 8888');
+ });
+
+
+/**
+ * socket server
+ */
+// TODO: behind nginx for production
+SocketServer.start({
+    port: config.tcpListenPort
 });

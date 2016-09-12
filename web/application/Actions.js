@@ -1,5 +1,6 @@
 var Router = require("./Router");
 var Store = require("./Store");
+var ClientManager = require('./ClientManager');
 
 var Actions = {
     config: {},
@@ -17,8 +18,20 @@ var Actions = {
             return;
         }
 
-        // TODO: write to client
-        console.log("TODO: write to client");
+        // write to client
+        // TODO: get ref from request
+        var client = ClientManager.get('A');
+        
+        if (!client) {
+            Router.sendError(response, 404, 'Not found');
+        }
+
+        client.draw(data, (err) => {
+            if (err) {
+                console.log(err);
+                Router.sendError(response, 500);
+                return;
+            }
 
             Router.sendError(response, 200);
         })
@@ -84,8 +97,7 @@ var Actions = {
     load  : function (id, response) {
         // TODO: load response from cache, send if found
 
-        id = id.trim();
-
+        // TODO: fix this regexp (1-1 is valid), package validation into a Validator util
         if (!(/[a-z0-9]{1,10}/i).test(id)) {
             // Bad request
             Router.sendError(response, 400);
