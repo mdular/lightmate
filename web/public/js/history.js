@@ -37,7 +37,7 @@ app.registerModule('history', function () {
             }
 
             var index = getHistoryIndex(event.target);
-                ui.setFrame(historyData[index].frame);
+                ui.setFrame(historyData[index].frame, true);
         });
     };
 
@@ -71,8 +71,6 @@ app.registerModule('history', function () {
             thumb += '<span style="background: '+ historyState.frame[i] +';"></span>';
         }
         thumb += '</div>';
-
-        // TODO: add change event msg of action
 
         html = thumb;
         html += historyState.mode;

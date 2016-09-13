@@ -9,19 +9,21 @@ body {
 a {
   color: black;
   text-decoration: none;
-  transition: color, .3s;
+  transition: background .3s;
 }
   a:hover {
     color: #555;
     background: #f0f0f0;
   }
 
+/* layout */
 
 #color, #pixels, #options, #history {
   width: 180px;
   margin-left: auto;
   margin-right: auto;
 }
+
 
 /* color */
 #color {
@@ -60,7 +62,8 @@ a {
   }
 
 #color a {
-  margin-left: .5em;
+  margin-left: .25em;
+  padding: 0 5px;
 }
 
 #color #picker {
@@ -72,6 +75,7 @@ a {
 }
   #color a.active {
     background: gray;
+    color: white;
   }
 
 
@@ -100,10 +104,127 @@ a {
     border-color: #999;
   }
 
+
+/* options */
+#options {}
+
+#options > h4 {
+    margin-bottom: .5em;
+}
+
+/* frame Ids */
+#frameIds {
+    font-size: 0;
+    /*margin: 10px 0;*/
+}
+
+#frameIds > input {
+    margin: 0;
+    visibility: hidden;
+    width: 18px;
+    height: 18px;
+    display:inline-block;
+}
+
+#frameIds > input:hover {
+    cursor: pointer;
+}
+
+#frameIds > input::before {
+    font-size: 13px;
+    content: attr(value);
+    text-align: center;
+    line-height: 18px;
+    display: block;
+    height: 100%;
+    visibility: visible;
+    transition: background .3s;
+    border-radius: 2px;
+
+}
+
+#frameIds > input:hover::before {
+    background: #f0f0f0;
+    color: #555;
+}
+
+#frameIds > input:checked::before {
+    background: gray;
+    color: white;
+}
+
+/* actions */
+#actions {
+    font-size: 0;
+    text-align: center;
+}
+
+#actions > a {
+    font-size: 13px;
+    display: inline-block;
+    width: 33.3%;
+}
+
+a[data-action=draw] {
+    border: 2px solid black;
+    font-weight: bold;
+    width: 25%;
+    display: inline-block;
+    margin-right: 5px;
+}
+a[data-action=draw]:active {
+    background-color: gray;
+    color: white;
+}
+
+
+/* sync */
+#sync {
+    text-align: center;
+    font-size: 0;
+    margin-bottom: 5px;
+}
+
+#sync > * {
+    font-size: 13px;
+}
+
+#sync > [data-action=draw] {
+
+}
+
+#sync [class*="status-"] {
+    display: none;
+}
+
+#syncToggle:hover {
+    cursor: pointer;
+}
+label[for=syncToggle]:hover {
+    cursor: pointer;
+}
+
+.status-error {
+    color: #BB0000;
+}
+
+.status-success {
+    color: #008800;
+}
+
+.status-warning {
+    color: #997700;
+}
+
+.status-info {
+    color: #888;
+}
+
 /* history */
 #history {
-  height: 176px;
+  /*height: 176px;*/
 }
+
 .history {
   cursor: pointer;
   transition: background, .3s;

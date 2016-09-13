@@ -27,31 +27,37 @@
 <div id="pixels"></div>
 
 <div id="options">
-  <a href="#" id="clear-option">
-    clear
-  </a>
-  <input type="text" id="frameId" value="1">
-  <a href="#" id="save">
-    save
-  </a>
-  <a href="#" id="load">
-    load
-  </a>
-  <!--
-  <a href="#">
-    live
-  </a>
-  <a href="#">
-    share
-  </a>
-  <a href="#">
-    lock
-  </a>
--->
+    <form id="sync">
+        <a href="#" data-action="draw">draw</a>
+        <label for="syncToggle"><input type="checkbox" name="syncToggle" id="syncToggle"> sync</label>
+        <span class="status-error">no client connected</span>
+        <span class="status-success">client connected</span>
+        <span class="status-warning">connecting...</span>
+        <span class="status-info">idle</span>
+    </form>
+    <h4>Frame ID</h4>
+    <form id="frameIds">
+        <input type="radio" name="frameId" value="1" checked="checked">
+        <input type="radio" name="frameId" value="2">
+        <input type="radio" name="frameId" value="3">
+        <input type="radio" name="frameId" value="4">
+        <input type="radio" name="frameId" value="5">
+        <input type="radio" name="frameId" value="6">
+        <input type="radio" name="frameId" value="7">
+        <input type="radio" name="frameId" value="8">
+        <input type="radio" name="frameId" value="9">
+        <input type="radio" name="frameId" value="10">
+    </form>
+    <div id="actions">
+        <a href="#" data-action="clear">clear</a>
+        <a href="#" data-action="save">save</a>
+        <a href="#" data-action="load">load</a>
+        <!-- <a href="#" data-action="lock">lock</a> -->
+    </div>
 </div>
 
 <div id="history">
-  <h4>history</h4>
+  <h4>History</h4>
   <div id="histories"></div>
 </div>
 

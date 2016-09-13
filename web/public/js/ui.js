@@ -27,7 +27,6 @@ app.registerModule('ui', function () {
         picker = document.querySelector('#picker');
         eraser = document.querySelector('#eraser');
         filler = document.querySelector('#filler');
-        clear = document.querySelector('#clear-option');
 
         createPixels(64);
     };
@@ -95,12 +94,12 @@ app.registerModule('ui', function () {
       filler.addEventListener('mousedown', function (event) {
         toggleDrawMode('filler');
       });
+    };
 
-      clear.addEventListener('mousedown', function (event) {
+    var clear = function () {
         for (var i = 0; i < pixels.childNodes.length; i++) {
             setPixelColor(pixels.childNodes[i], false);
         }
-      });
     };
 
     var toggleDrawMode = function (mode) {
@@ -183,7 +182,6 @@ app.registerModule('ui', function () {
       } else {
         target.removeAttribute('style');
       }
-
     };
 
     var getFrame = function () {
@@ -208,7 +206,7 @@ app.registerModule('ui', function () {
       }
 
       if (typeof triggerChange !== 'undefined' && triggerChange) {
-        pixels.dispatchEvent(new Event('change'));
+        pixels.dispatchEvent(new Event('sync'));
       }
     };
 
@@ -217,6 +215,7 @@ app.registerModule('ui', function () {
         enableDrawing : enableDrawing,
         getFrame  : getFrame,
         setFrame  : setFrame,
-        getTemplate : getTemplate
+        getTemplate : getTemplate,
+        clear: clear
     };
 });

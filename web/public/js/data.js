@@ -11,11 +11,11 @@ app.registerModule('data', function () {
         id;
 
     var init = function () {
-        var frameId = document.querySelector('#frameId');
+        var frameId = document.querySelector('#frameIds');
         frameId.addEventListener('change', function (event) {
             id = event.target.value;
         });
-        id = frameId.value;
+        id = frameId.querySelector('input:checked').value || 1;
     };
 
     var ajax = function (url, data, callback) {
