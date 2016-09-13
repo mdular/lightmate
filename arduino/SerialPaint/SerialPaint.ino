@@ -27,7 +27,8 @@ unsigned char dots[2][8][8][3] = {0};
 //[8]:Row:8 row in LED plane
 //[8]:Column:8 column in one row
 //[3]:Color:RGB data: 0 for Red; 1 for green, 2 for Blue
-unsigned char Gamma_Value[3] = {41,63,55};
+//unsigned char Gamma_Value[3] = {41,63,55};
+unsigned char Gamma_Value[3] = {50,63,63};
 //Gamma correctly value, every LED plane is different.value range is 0~63
 //[3]:RGB data, 0 for Red; 1 for green, 2 for Blue
 unsigned char Page_Index = 0; // the index of buffer
