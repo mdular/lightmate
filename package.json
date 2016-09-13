@@ -4,6 +4,7 @@
   "author": "Markus J Doetsch mdular.com",
   "dependencies": {
     "mongodb": "^2.2.9",
+    "pm2": "^2.0.8",
     "serialport": "^4.0.1"
   },
   "devDependencies": {},

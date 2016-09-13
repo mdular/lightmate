@@ -12,6 +12,14 @@ loading and saving data requires mongodb running on ```localhost:27017```
 #### Start lightmate server
     node web/application/server.js
 
+or using pm2:
+
+    node_modules/.bin/pm2 start web/application/server.js
+    node_modules/.bin/pm2 restart web/application/server.js
+    node_modules/.bin/pm2 stop web/application/server.js
+
+    node_modules/.bin/pm2 logs server
+
 #### Start lightmate client
 Requires paired / plugged in USB serial, PORT will vary depending on OS
 
