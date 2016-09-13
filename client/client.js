@@ -17,7 +17,8 @@ var connection = net.createConnection({
 
     // TODO: handle connection failures, retry
 
-    // TODO: send connection package
+    // send connection package
+    // TODO: generate, store client reference, based on device MAC?
     connection.write(JSON.stringify({
         action: 'connect',
         payload: {

@@ -37,8 +37,7 @@ Client.prototype = {
 
     draw: function (frame, callback) {
         if (!this.connected) {
-            console.log('cannot draw: client is not connected');
-            return;
+            return callback(new Error('cannot draw: client is not connected'));
         }
 
         // TODO: send frame to client, return OK

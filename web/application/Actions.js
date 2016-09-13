@@ -21,9 +21,10 @@ var Actions = {
         // write to client
         // TODO: get ref from request
         var client = ClientManager.get('A');
-        
+
         if (!client) {
             Router.sendError(response, 404, 'Not found');
+            return;
         }
 
         client.draw(data, (err) => {

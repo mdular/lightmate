@@ -2,7 +2,7 @@ var Client = require('./Client');
 
 // TODO: persist clients in store
 // preserves url ref (account) link after unload
-// keep some stats
+// keep some stats / historical fields
 
 var clients = {};
 
