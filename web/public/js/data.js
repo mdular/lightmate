@@ -7,15 +7,10 @@
 app.registerModule('data', function () {
     "use strict";
 
-    var url = 'http://localhost:8888/',
-        id;
+    var url = 'http://localhost:8888/';
 
     var init = function () {
-        var frameId = document.querySelector('#frameIds');
-        frameId.addEventListener('change', function (event) {
-            id = event.target.value;
-        });
-        id = frameId.querySelector('input:checked').value || 1;
+
     };
 
     var ajax = function (url, data, callback) {
@@ -60,7 +55,7 @@ app.registerModule('data', function () {
         });
     }
 
-    var save = function (data) {
+    var save = function (id, data) {
         if (typeof id === 'undefined' || !id) {
             throw new Error('no id!');
             return;
@@ -77,7 +72,7 @@ app.registerModule('data', function () {
         });
     };
 
-    var load = function (callback) {
+    var load = function (id, callback) {
         if (typeof id === 'undefined' || !id) {
             throw new Error('no id!');
             return;

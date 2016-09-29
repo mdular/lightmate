@@ -7,7 +7,7 @@
 app.registerController('lightmate', function () {
     "use strict";
 
-    var ui, data, history;
+    var ui, data, history, id;
 
     var init = function () {
       ui = app.getModule('ui').module;
@@ -16,6 +16,9 @@ app.registerController('lightmate', function () {
 
       var syncToggle = document.querySelector('[name=syncToggle]');
       var syncEnabled = syncToggle.checked;
+
+      var frameId = document.querySelector('#frameIds');
+      id = frameId.querySelector('input:checked').value || 1;
 
       ui.enableDrawing();
       actions.load();
@@ -40,6 +43,11 @@ app.registerController('lightmate', function () {
           actions[action].call(event, this);
       }.bind(this));
 
+      frameId.addEventListener('change', function (event) {
+          id = event.target.value;
+          actions.load();
+      });
+
       syncToggle.addEventListener('change', function (event) {
           syncEnabled = event.target.checked;
       });
@@ -62,13 +70,13 @@ app.registerController('lightmate', function () {
             ui.clear();
         },
         save: function (event) {
-            data.save({
+            data.save(id, {
                 pixels: ui.getFrame(),
                 history: history.getHistory()
             });
         },
         load: function (event) {
-            data.load(function (data) {
+            data.load(id, function (data) {
                 ui.setFrame(data.pixels, true);
                 history.setHistory(data.history);
             });
