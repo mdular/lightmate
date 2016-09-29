@@ -1,14 +1,20 @@
 var SP = require("serialport");
 
 var SerialPort = {
-    sp: {},
+    sp: null,
+    connected: false,
 
-    start: function (port) {
+    list: function () {
         SP.list(function (err, ports) {
             if (err) throw new Error(err);
 
             console.log(ports);
+
+            // TODO: search for lightmate, use that port if not specified
         });
+    },
+
+    start: function (port) {
 
         this.sp = new SP(port, {
             baudRate: 9600,
@@ -20,8 +26,10 @@ var SerialPort = {
             // parser: SP.parsers.raw
         });
 
-        this.sp.on('open', function () {
+        this.sp.on('open', () => {
             console.log('serial connection established with', port);
+            this.connected = true;
+            this.run();
         })
 
         this.sp.on('error', function (err) {
@@ -30,16 +38,22 @@ var SerialPort = {
 
         this.sp.on('disconnect', function (err) {
             console.log('serial connection was disconnected', err);
+            this.connected = false;
         });
 
         this.sp.on('close', function () {
             console.log('serial connection was closed.');
+            this.connected = false;
         });
     },
 
     send: function (data, callback) {
         if (typeof callback !== 'function') {
             throw new Error("callback must be a function");
+        }
+
+        if (this.connected === false) {
+            callback()
         }
 
         this.sp.write(data, function () {
@@ -73,9 +87,17 @@ var SerialPort = {
             return;
         }
 
-        if (!this.q.length) {
+        if (this.connected === false) {
+            return;
+        }
+
+        if (this.q.length <= 0 && this.running === true) {
             this.running = false;
             console.log('serial queue drained after ' + ((new Date()).getTime() - this.time.getTime()) + ' msec');
+            return;
+        }
+
+        if (this.q.length <= 0) {
             return;
         }
 

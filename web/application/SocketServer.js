@@ -96,6 +96,10 @@ var SocketServer = {
 
             conn.on('end', () => {
                 // console.log("client disconnected");
+                if (client === null) {
+                    return;
+                }
+                
                 client.disconnect((err) => {
                     if (err) throw err;
                 });

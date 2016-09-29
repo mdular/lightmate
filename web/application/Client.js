@@ -40,7 +40,7 @@ Client.prototype = {
             return callback(new Error('cannot draw: client is not connected'));
         }
 
-        // TODO: send frame to client, return OK
+        // send frame to client, return OK
         this.connection.write(JSON.stringify({
             action: 'draw',
             payload: frame
