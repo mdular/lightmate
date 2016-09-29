@@ -91,9 +91,10 @@ var SerialPort = {
             return;
         }
 
-        if (this.q.length <= 0 && this.running === true) {
+        if (this.q.length <= 0 && this.time !== null) {
             this.running = false;
             console.log('serial queue drained after ' + ((new Date()).getTime() - this.time.getTime()) + ' msec');
+            this.time = null;
             return;
         }
 
