@@ -15,11 +15,6 @@ client.connect();
 var SerialPort = require('./SerialPort');
 SerialPort.list();
 
-setTimeout(() => {
-    SerialPort.start(process.env.PORT);
-    SerialPort.listen(function (message) {
-        // TODO: process response from arduino: "frame complete"
-
-        console.log('recieved serial data:', message);
-    });
-}, 10000);
+// setTimeout(() => {
+//     SerialPort.start();
+// }, 10000);

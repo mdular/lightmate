@@ -3,6 +3,7 @@ var SP = require("serialport");
 var SerialPort = {
     sp: null,
     connected: false,
+    connecting: false,
 
     list: function () {
         SP.list(function (err, ports) {
@@ -15,6 +16,15 @@ var SerialPort = {
     },
 
     start: function (port) {
+        if (this.connecting) {
+            return;
+        }
+
+        if (process.env.PORT) {
+            port = process.env.PORT;
+        }
+
+        this.connecting = true;
 
         this.sp = new SP(port, {
             baudRate: 9600,
@@ -28,8 +38,23 @@ var SerialPort = {
 
         this.sp.on('open', () => {
             console.log('serial connection established with', port);
-            this.connected = true;
-            this.run();
+
+            this.listen (function (err, message) {
+                if (err) {
+                    console.dir(err);
+                    return;
+                }
+
+                // TODO: process response from arduino: "frame complete"
+
+                console.log('recieved serial data:', message);
+            });
+
+            setTimeout(() => {
+                this.connected = true;
+                this.connecting = false;
+                this.run();
+            }, 100);
         })
 
         this.sp.on('error', function (err) {
@@ -67,7 +92,7 @@ var SerialPort = {
         }
 
         this.sp.on('data', function (input) {
-            callback(input);
+            callback(false, input);
         });
     },
 
@@ -88,6 +113,7 @@ var SerialPort = {
         }
 
         if (this.connected === false) {
+            this.start();
             return;
         }
 
