@@ -1,4 +1,5 @@
 var SP = require("serialport");
+const Readline = require('@serialport/parser-readline')
 
 var SerialPort = {
     sp: null,
@@ -32,9 +33,13 @@ var SerialPort = {
             parity: 'none',
             stopBits: 1,
             flowControl: false,
-            parser: SP.parsers.readline('\r\n')
+            // parser: SP.parsers.readline('\r\n')
             // parser: SP.parsers.raw
         });
+
+        this.sp.pipe(new Readline({ delimiter: '\r\n' }));
+
+        this.sp.on('data', console.log);
 
         this.sp.on('open', () => {
             console.log('serial connection established with', port);
