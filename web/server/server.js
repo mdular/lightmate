@@ -6,7 +6,6 @@ var SocketServer = require("./SocketServer");
 
 // TODO: bind frames to user account (guest users get random id, access by URL possible, registration required for pw protection)
 // TODO: 10 frames per user
-// TODO: "live" mode, "draw" trigger
 // TODO: client ID, attach client to account - access page via URL (even if guest, create "release" option for client UI!);
 // client (id ref) > server (url ref, can be password protected)
 // frames 'page' stays 1-10, 'ref' becomes server url ref
@@ -31,8 +30,8 @@ var config = {
  * http routing
  */
 Router.configure({
- "maxPostLength": config.maxPostLength,
- "defaultHeader": config.defaultHeader
+    "maxPostLength": config.maxPostLength,
+    "defaultHeader": config.defaultHeader
 });
 Actions.configure({
     pixelAmount: config.pixelAmount,
