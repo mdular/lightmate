@@ -12,9 +12,9 @@ var client = new SocketClient({hostname: 'localhost', port: 8124});
 client.connect();
 
 // connect to serialport
-var SerialPort = require('./SerialPort');
-SerialPort.list();
+// var SerialPort = require('./SerialPort');
+// SerialPort.list();
 
-// setTimeout(() => {
-//     SerialPort.start();
-// }, 10000);
+setTimeout(() => {
+    SerialPort.start();
+}, 2000);

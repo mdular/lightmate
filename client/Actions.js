@@ -9,7 +9,7 @@ var Actions = {
         }
 
         // this.connected = true;
-        console.log('connected');
+        console.log('client connected');
     },
 
     draw: function (payload) {
