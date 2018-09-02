@@ -1,7 +1,14 @@
 /**
  * lightweight application manager
+ * @version 1.0.0
  * @author Markus J Doetsch
+ *
+ * Info:
+ *
  * https://github.com/mdular/app.js
+ *
+ *
+ * Usage:
  *
  * register page controllers like this:
  * app.registerController('myController, myModule[FunctionWrapper]);
@@ -16,11 +23,8 @@
  * data-modules = module dependencies, separated by space
  *
  * modules are invoked before the controller
- *
- * TODO: implement additional window.load callback for controllers (to simplify lazy loading scripting)
- * TODO: inject module references into the controller
  */
-/* global app:true, aight */
+/* global app:true */
 
 var app = (function () {
     "use strict";
@@ -146,7 +150,6 @@ var app = (function () {
         modules[moduleName] = {
             module  : module,
             init    : false
-            //run     : false
         };
     };
 
@@ -163,4 +166,5 @@ var app = (function () {
     };
 }());
 
+// 'DOMContentLoaded' or 'load'
 app.listen('DOMContentLoaded');
