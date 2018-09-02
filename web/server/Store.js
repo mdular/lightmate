@@ -3,15 +3,26 @@ var MongoClient = require('mongodb').MongoClient;
 var Store = {
     db: null,
     connect: function (config) {
-        MongoClient.connect(config.mongoURI, (err, dbConnection) => {
-          if (err) {
-              throw err;
-          }
+        MongoClient.connect(config.mongoURI, (err, client) => {
+            if (err) {
+                console.dir("Error: failed to connect to database. Retrying...");
+                // throw err;
+                // TODO: continue here
+                setTimeout(() => {
+                    this.connect(config);
+                }, 10000);
+                return err;
+            }
 
-          // TODO: handle mongo connection loss, retry, error
+            this.db = client.db('lightmate');
+            console.dir('Database connection established');
 
-          this.db = dbConnection;
-          console.dir('mongodb connection established');
+            client.on('close', (event) => {
+                client.close();
+                this.db = null;
+                console.dir('Database connection lost. Attempting to reconnect.');
+                this.connect(config);
+            });
         });
     },
     loadFrame: function (id, callback) {
