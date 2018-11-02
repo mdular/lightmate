@@ -22,12 +22,16 @@ or using pm2:
 
     node_modules/.bin/pm2 monit
 
+    ./node_modules/.bin/pm2 start server --watch
+
 #### Start lightmate client
 Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary depending on OS
 
     PORT="/dev/cu.lightmate-DevB" node client/client.js
 
     PORT="/dev/cu.lightmate-DevB" ./node_modules/.bin/pm2 start client/client.js
+
+    ./node_modules/.bin/pm2 start client --watch
 
 #### monitor PM2 processes
 
