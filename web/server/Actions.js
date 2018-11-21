@@ -18,9 +18,10 @@ var Actions = {
             return;
         }
 
-        // write to client
+        // TODO write to specific client, client mgmt
         // TODO: get ref from request
-        var client = ClientManager.get('A');
+        // var client = ClientManager.get('A');
+        var client = ClientManager.getOrCreate('A');
 
         if (!client) {
             Router.sendError(response, 404, 'Not found');

@@ -12,14 +12,18 @@ var ClientManager = {
         clients[ref] = client;
 
         console.log('created client', ref);
+
+        return this.get(ref);
     },
 
     getOrCreate: function (ref) {
-        if (typeof clients[ref] === 'undefined') {
-            this.create(ref);
+        let client = this.get(ref);
+
+        if (client === false) {
+            return this.create(ref);
         }
 
-        return clients[ref];
+        return client;
     },
 
     get: function (ref) {

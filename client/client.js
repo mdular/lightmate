@@ -12,9 +12,8 @@ var client = new SocketClient({hostname: 'localhost', port: 8124});
 client.connect();
 
 // connect to serialport
-// var SerialPort = require('./SerialPort');
-// SerialPort.list();
+SerialPort.list();
 
 setTimeout(() => {
-    SerialPort.start();
+    SerialPort.start('/dev/tty.lightmate-DevB');
 }, 2000);
