@@ -13,6 +13,12 @@ var SocketClient = function (config) {
     this.bind = SocketClient.prototype.bind;
     this.send = SocketClient.prototype.send;
     this.setActions = SocketClient.prototype.setActions;
+
+    if (process.env.SERVER) {
+        let server = process.env.SERVER.split(':');
+        this.config.host = server[0];
+        this.config.port = server[1];
+    }
 };
 
 SocketClient.prototype = {
