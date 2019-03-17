@@ -39,3 +39,39 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
 
 #### Access the web UI (or setup a static file server)
     file:///PATH-TO-PROJECT/web/public/index.html
+
+## Setup client on a Raspberry Pi 0 (W or IoT pHAT)
+
+### Verify the bluetooth device is available
+
+    $ hcitool dev
+
+    Devices:
+    	hci0	AA:BB:CC:DD:EE:FF
+
+    (I needed to flash the eeprom of the IoT pHAT, was v0.3)
+
+### Scan for lightmate
+
+    $ hcitool scan
+
+    Scanning ...
+	   XX:XX:XX:XX:XX:XX	lightmate
+
+### Pairing
+
+    $ bluetoothctl
+
+    [bluetooth] power on
+    [bluetooth] agent on
+    [bluetooth] scan on
+    [bluetooth] pair XX:XX:XX:XX:XX:XX
+    [bluetooth] connect XX:XX:XX:XX:XX:XX
+    [bluetooth] trust XX:XX:XX:XX:XX:XX
+    [bluetooth] quit
+
+### Connect
+
+    $ sudo rfcomm connect hci0 XX:XX:XX:XX:XX:XX
+
+    Connected /dev/rfcomm0 to XX:XX:XX:XX:XX:XX on channel 1
