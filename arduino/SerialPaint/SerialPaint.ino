@@ -69,13 +69,13 @@ void setup()
 //  delay(1000);
 
     // RGB test
-//  DispShowColor(255, 0, 0);
-//  delay(1000);
-//  DispShowColor(0, 255, 0);
-//  delay(1000);
-//  DispShowColor(0, 0, 255);
-//  delay(1000);
-//  DispShowColor(0, 0, 0);
+  DispShowColor(255, 0, 0);
+  delay(1000);
+  DispShowColor(0, 255, 0);
+  delay(1000);
+  DispShowColor(0, 0, 255);
+  delay(1000);
+  DispShowColor(255, 255, 255);
 
   /*
    * TODO: create a "waiting to connect" mode with animation
