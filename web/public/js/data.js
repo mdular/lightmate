@@ -7,7 +7,7 @@
 app.registerModule('data', function () {
     "use strict";
 
-    var url = 'http://localhost:8888/';
+    var url = 'http://localhost:8888';
 
     var init = function () {
 
@@ -46,7 +46,7 @@ app.registerModule('data', function () {
     }
 
     var draw = function (data) {
-        ajax(url + 'draw', data, function (event) {
+        ajax(url + '/draw', data, function (event) {
             if (event.type === "load" && event.target.status === 200) {
                 console.log("draw OK");
             } else if (event.target.status !== 200) {
@@ -63,7 +63,7 @@ app.registerModule('data', function () {
 
         data.reference = id;
 
-        ajax(url + 'save/' + id, data, function (event) {
+        ajax(url + '/save/' + id, data, function (event) {
             if (event.type === "load" && event.target.status === 200) {
                 console.log('save OK');
             } else if (event.target.status !== 200) {
@@ -78,7 +78,7 @@ app.registerModule('data', function () {
             return;
         }
 
-        ajax(url + 'load/' + id, false, function (event) {
+        ajax(url + '/load/' + id, false, function (event) {
             if (event.type === 'load' && event.target.status === 200) {
                 callback(JSON.parse(event.target.response));
             } else if (event.target.status !== 200) {

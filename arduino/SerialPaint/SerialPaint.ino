@@ -28,7 +28,7 @@ unsigned char dots[2][8][8][3] = {0};
 //[8]:Column:8 column in one row
 //[3]:Color:RGB data: 0 for Red; 1 for green, 2 for Blue
 //unsigned char Gamma_Value[3] = {41,63,55};
-unsigned char Gamma_Value[3] = {50,63,63};
+unsigned char Gamma_Value[3] = {40,63,55};
 //Gamma correctly value, every LED plane is different.value range is 0~63
 //[3]:RGB data, 0 for Red; 1 for green, 2 for Blue
 unsigned char Page_Index = 0; // the index of buffer
@@ -45,7 +45,7 @@ unsigned char line = 0;
 define the extern data zone
 **************************************************/
 extern unsigned char font8_8[92][8];
-extern unsigned char pic[4][8][8][3];
+extern unsigned char pic[6][8][8][3];
 
 
 /****************************************************
@@ -59,13 +59,25 @@ void setup()
 
   DispShowColor(0, 0, 0);
 
-  pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
+// TODO: delay before turning on BT module to leave serial line available for flashing.
+//  delay(1000);
+//  pinMode(2, OUTPUT);
+//  digitalWrite(2, HIGH);
   delay(500);
   Serial.begin(9600);
   Serial.println("lightmate");
 
 //  DispShowPic(0);
+//  delay(1000);
+//  DispShowPic(1);
+//  delay(1000);
+//  DispShowPic(2);
+//  delay(1000);
+//  DispShowPic(3);
+//  delay(1000);
+//  DispShowPic(4);
+//  delay(1000);
+//  DispShowPic(5);
 //  delay(1000);
 
     // RGB test
@@ -618,9 +630,9 @@ void DispShowColor(unsigned char R,unsigned char G,unsigned char B)
   for (i = 0;i<8;i++)
     for(j = 0;j<8;j++)
     {
-      dots[Page_Write][i][j][2] = R;
+      dots[Page_Write][i][j][0] = R;
       dots[Page_Write][i][j][1] = G;
-      dots[Page_Write][i][j][0] = B;
+      dots[Page_Write][i][j][2] = B;
     }
   
   Page_Index = Page_Write;
@@ -663,4 +675,3 @@ void LED_Delay(unsigned char i)
   y = i * 10;
   while(y--);
 }
-

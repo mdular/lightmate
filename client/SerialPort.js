@@ -32,9 +32,7 @@ var SerialPort = {
             dataBits: 8,
             parity: 'none',
             stopBits: 1,
-            flowControl: false,
-            // parser: SP.parsers.readline('\r\n')
-            // parser: SP.parsers.raw
+            flowControl: false
         });
 
         this.sp.pipe(new Readline({ delimiter: '\r\n' }));
@@ -68,11 +66,13 @@ var SerialPort = {
 
         this.sp.on('disconnect', function (err) {
             console.log('serial connection was disconnected', err);
+            this.sp = null;
             this.connected = false;
         });
 
         this.sp.on('close', function () {
             console.log('serial connection was closed.');
+            this.sp = null;
             this.connected = false;
         });
     },

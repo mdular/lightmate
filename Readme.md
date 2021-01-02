@@ -31,6 +31,10 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
 
     PORT="/dev/cu.lightmate-DevB" ./node_modules/.bin/pm2 start client/client.js
 
+    PORT=/dev/rfcomm0 SERVER=localhost:8124 node client/client.js
+
+    PORT=/dev/rfcomm0 SERVER=localhost:8124 node_modules/.bin/pm2 start client/client.js --watch
+
     ./node_modules/.bin/pm2 start client --watch
 
 #### monitor PM2 processes
@@ -39,6 +43,7 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
 
 #### Access the web UI (or setup a static file server)
     file:///PATH-TO-PROJECT/web/public/index.html
+
 
 ## Setup client on a Raspberry Pi 0 (W or IoT pHAT)
 
@@ -75,3 +80,7 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
     $ sudo rfcomm connect hci0 XX:XX:XX:XX:XX:XX
 
     Connected /dev/rfcomm0 to XX:XX:XX:XX:XX:XX on channel 1
+
+    sudo rfcomm bind hci0 XX:XX:XX:XX:XX:XX
+
+    sudo PORT=/dev/rfcomm0 SERVER=localhost:8124 node client/client.js
