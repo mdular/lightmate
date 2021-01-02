@@ -1,12 +1,16 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var net = require ("net");
-var Actions = require('./Actions');
 
-var SocketClient = function (config) {
+var SocketRouter = {
+    actions: {},
+    //handle: function () {}
+};
+
+var SocketClient = function (config, actions) {
     EventEmitter.call(this); // super()
     this.config = config || SocketClient.prototype.config;
-    this.actions = Actions;
+    this.actions = actions;
     this.connected = SocketClient.prototype.connected;
     this.connection = SocketClient.prototype.connection;
     this.connect = SocketClient.prototype.connect;
@@ -36,7 +40,7 @@ SocketClient.prototype = {
             port: this.config.port,
             host: this.config.host
         }, () => {
-            console.log('connected to server');
+            console.log('estabilshed connection to server');
 
             // TODO: handle connection failures, retry
             // send connection package

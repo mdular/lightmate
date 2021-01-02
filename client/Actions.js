@@ -1,6 +1,12 @@
 var SerialPort = require('./SerialPort');
 
 var Actions = {
+    device: null,
+
+    // setDevice: function (device) {
+    //     this.device = device;
+    // },
+
     connect: function (payload) {
         if (payload.result !== 'OK') {
             // TODO: retry?
@@ -14,19 +20,9 @@ var Actions = {
 
     draw: function (payload) {
         console.log('draw command pushed');
-
         // TODO: validate payload
-        for (let i in payload.payload) {
-            let val = payload.payload[i];
 
-            if (val !== 0) {
-                val = val.replace(/#/, '');
-              //   val = parseInt(val, 16);
-              SerialPort.queue(val);
-            } else {
-              SerialPort.queue('000000');
-            }
-        }
+        this.device.drawFrame(payload);
     },
 
     error: function (payload) {

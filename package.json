@@ -3,9 +3,12 @@
   "description": "persist lightmate frames",
   "author": "Markus J Doetsch mdular.com",
   "dependencies": {
-    "mongodb": "^3.1.4",
-    "pm2": "^3.0.4",
-    "serialport": "^7.0.2"
+    "mongodb": "^3.6.3",
+    "pm2": "^4.5.1",
+    "serialport": "^7.1.5"
+  },
+  "optionalDependencies": {
+    "bluetooth-classic-serialport-client": "^0.1.23"
   },
   "devDependencies": {}
 }

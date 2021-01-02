@@ -28,6 +28,7 @@ or using pm2:
 Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary depending on OS
 
     PORT="/dev/cu.lightmate-DevB" node client/client.js
+    PORT="/dev/rfcomm0" node client/client.js
 
     PORT="/dev/cu.lightmate-DevB" ./node_modules/.bin/pm2 start client/client.js
 
@@ -36,6 +37,8 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
     PORT=/dev/rfcomm0 SERVER=localhost:8124 node_modules/.bin/pm2 start client/client.js --watch
 
     ./node_modules/.bin/pm2 start client --watch
+
+    PORT=/dev/rfcomm0 SERVER=localhost:8124 ./node_modules/.bin/pm2 start client/client.js
 
 #### monitor PM2 processes
 
@@ -75,6 +78,8 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
     [bluetooth] trust XX:XX:XX:XX:XX:XX
     [bluetooth] quit
 
+    pairing code: 0000
+
 ### Connect
 
     $ sudo rfcomm connect hci0 XX:XX:XX:XX:XX:XX
@@ -84,3 +89,9 @@ Requires paired bluetooth **or** plugged in USB serial, `PORT` will vary dependi
     sudo rfcomm bind hci0 XX:XX:XX:XX:XX:XX
 
     sudo PORT=/dev/rfcomm0 SERVER=localhost:8124 node client/client.js
+
+
+## NEW: bluetooth setup raspberry pi zero using bluetooth-classic-serialport-client
+
+    sudo apt-get install libbluetooth-dev
+
